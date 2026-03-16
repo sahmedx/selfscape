@@ -23,3 +23,17 @@ export interface BirthdateResult {
   chinese: ChineseZodiacResult;
   dayMaster: DayMasterResult;
 }
+
+export interface SwipeCardData {
+  id: string;
+  leftLabel: string;
+  rightLabel: string;
+  prompt?: string;
+}
+
+export type SwipeDirection = "left" | "right";
+
+export interface SwipeResponse {
+  cardId: string;
+  direction: SwipeDirection;
+}
