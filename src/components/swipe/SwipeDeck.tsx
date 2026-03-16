@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import SwipeCard, { SwipeCardHandle } from "./SwipeCard";
 import { SwipeCardData, SwipeDirection, SwipeResponse } from "@/lib/types";
 
@@ -26,6 +25,10 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
       const newResponses = [...responses, response];
       setResponses(newResponses);
       onSwipe?.(response);
+
+      // Advance to next card and unlock interactions
+      setCurrentIndex((i) => i + 1);
+      setIsAnimating(false);
 
       if (currentIndex + 1 >= cards.length) {
         onComplete(newResponses);
@@ -64,48 +67,32 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
     <div className="flex flex-col items-center gap-8">
       {/* Card stack */}
       <div className="relative w-[80vw] max-w-[320px] aspect-[5/7]">
-        <AnimatePresence
-          onExitComplete={() => {
-            setCurrentIndex((i) => i + 1);
-            setIsAnimating(false);
-          }}
-        >
-          {!isDone && (
-            <>
-              {/* Next card (peeking behind) */}
-              {currentIndex + 1 < cards.length && (
-                <motion.div
-                  key={cards[currentIndex + 1].id}
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ scale: 0.95, y: 10 }}
-                  animate={{ scale: 0.95, y: 10 }}
-                >
-                  <SwipeCard
-                    card={cards[currentIndex + 1]}
-                    onSwipe={() => {}}
-                    draggable={false}
-                  />
-                </motion.div>
-              )}
-
-              {/* Top card (draggable) */}
-              <motion.div
-                key={cards[currentIndex].id}
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0 }}
-              >
+        {!isDone && (
+          <>
+            {/* Next card (peeking behind) */}
+            {currentIndex + 1 < cards.length && (
+              <div className="absolute inset-0 flex items-center justify-center scale-95 translate-y-[10px]">
                 <SwipeCard
-                  ref={topCardRef}
-                  card={cards[currentIndex]}
-                  onSwipe={handleSwipe}
-                  draggable={!isAnimating}
+                  key={cards[currentIndex + 1].id}
+                  card={cards[currentIndex + 1]}
+                  onSwipe={() => {}}
+                  draggable={false}
                 />
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+              </div>
+            )}
+
+            {/* Top card (draggable) */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <SwipeCard
+                key={cards[currentIndex].id}
+                ref={topCardRef}
+                card={cards[currentIndex]}
+                onSwipe={handleSwipe}
+                draggable={!isAnimating}
+              />
+            </div>
+          </>
+        )}
 
         {isDone && (
           <div className="flex items-center justify-center h-full">
