@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import BirthdatePicker from "@/components/BirthdatePicker";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import { getWesternZodiac } from "@/lib/western-zodiac";
@@ -9,24 +9,31 @@ import { getDayMaster } from "@/lib/day-master";
 import { BirthdateResult } from "@/lib/types";
 import {
   saveToSession,
-  loadFromSession,
   removeFromSession,
   SESSION_KEYS,
 } from "@/lib/session";
 
 const emptySubscribe = () => () => {};
 
-function useSessionResult() {
-  const getSnapshot = useCallback(
-    () => loadFromSession<BirthdateResult>(SESSION_KEYS.birthdateResult),
-    []
-  );
-  const getServerSnapshot = useCallback(() => null, []);
-  return useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
+function getSessionSnapshot(): string | null {
+  try {
+    return sessionStorage.getItem(SESSION_KEYS.birthdateResult);
+  } catch {
+    return null;
+  }
+}
+
+function getServerSnapshot(): string | null {
+  return null;
 }
 
 export default function Home() {
-  const savedResult = useSessionResult();
+  const raw = useSyncExternalStore(emptySubscribe, getSessionSnapshot, getServerSnapshot);
+  const savedResult = useMemo<BirthdateResult | null>(
+    () => (raw ? JSON.parse(raw) : null),
+    [raw]
+  );
+
   const [result, setResult] = useState<BirthdateResult | null>(null);
 
   // Use local state if set, otherwise fall back to session
