@@ -82,13 +82,13 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
       >
         {/* Direction indicator labels */}
         <motion.div
-          className="absolute top-6 left-6 text-gold font-serif text-lg font-bold -rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
+          className="absolute top-6 left-6 text-gold font-serif text-xl font-bold -rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
           style={{ opacity: leftLabelOpacity }}
         >
           ← {card.leftDragLabel ?? "Left"}
         </motion.div>
         <motion.div
-          className="absolute top-6 right-6 text-gold font-serif text-lg font-bold rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
+          className="absolute top-6 right-6 text-gold font-serif text-xl font-bold rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
           style={{ opacity: rightLabelOpacity }}
         >
           {card.rightDragLabel ?? "Right"} →
@@ -97,25 +97,25 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
         {/* Card content */}
         <div className="flex flex-col items-center justify-center h-full px-6 gap-6">
           {card.prompt && (
-            <p className="text-foreground/60 text-base text-center font-serif italic">
+            <p className="text-foreground/60 text-lg text-center font-serif italic">
               {card.prompt}
             </p>
           )}
           <div className="flex gap-4 w-full">
             <div className="flex-1 text-center">
-              <p className="text-foreground/40 text-xs uppercase tracking-wider mb-2">
+              <p className="text-foreground/40 text-sm uppercase tracking-wider mb-2">
                 ← Swipe left
               </p>
-              <p className="text-foreground font-serif text-base leading-relaxed">
+              <p className="text-foreground font-serif text-xl leading-relaxed">
                 {card.leftLabel}
               </p>
             </div>
             <div className="w-px bg-gold/20" />
             <div className="flex-1 text-center">
-              <p className="text-foreground/40 text-xs uppercase tracking-wider mb-2">
+              <p className="text-foreground/40 text-sm uppercase tracking-wider mb-2">
                 Swipe right →
               </p>
-              <p className="text-foreground font-serif text-base leading-relaxed">
+              <p className="text-foreground font-serif text-xl leading-relaxed">
                 {card.rightLabel}
               </p>
             </div>
