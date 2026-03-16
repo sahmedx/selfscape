@@ -4,8 +4,18 @@ export interface WesternZodiacResult {
   modality: string;
 }
 
+export interface ChinesePillar {
+  stem: string;         // e.g., "Jiǎ"
+  stemElement: string;  // e.g., "Wood"
+  stemPolarity: string; // e.g., "Yang"
+  branch: string;       // e.g., "Rat"
+}
+
 export interface ChineseZodiacResult {
-  animal: string;
+  animal: string;       // year animal (kept for convenience)
+  year: ChinesePillar;
+  month: ChinesePillar;
+  day: ChinesePillar;
 }
 
 export interface DayMasterResult {
@@ -91,3 +101,15 @@ export interface EnneagramResult {
   primaryType: EnneagramType;
   suggestion: EnneagramType | null;
 }
+
+// MBTI types
+
+export interface MBTIDimension {
+  key: string;
+  left: string;
+  right: string;
+  leftLabel: string;
+  rightLabel: string;
+}
+
+export type MBTIResult = string; // 4-letter string like "INFJ"

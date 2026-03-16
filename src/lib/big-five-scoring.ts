@@ -15,11 +15,11 @@ const DIMENSION_NAMES: Record<BigFiveDimensionKey, string> = {
 };
 
 const LABELS: Record<BigFiveDimensionKey, Record<number, string>> = {
-  o: { 2: "Boundlessly curious", 1: "Leaning curious", 0: "Balanced", [-1]: "Leaning grounded", [-2]: "Deeply grounded" },
-  c: { 2: "Deliberately structured", 1: "Leaning structured", 0: "Balanced", [-1]: "Leaning spontaneous", [-2]: "Freely spontaneous" },
-  e: { 2: "Energized by connection", 1: "Leaning outward", 0: "Balanced", [-1]: "Leaning inward", [-2]: "Powered by solitude" },
-  a: { 2: "Naturally trusting", 1: "Leaning trusting", 0: "Balanced", [-1]: "Leaning independent", [-2]: "Fiercely independent" },
-  n: { 2: "Deeply feeling", 1: "Leaning feeling", 0: "Balanced", [-1]: "Leaning steady", [-2]: "Unshakably steady" },
+  o: { 2: "Boundlessly curious", 1: "Leaning curious", 0: "Balanced openness", [-1]: "Leaning grounded", [-2]: "Deeply grounded" },
+  c: { 2: "Deliberately structured", 1: "Leaning structured", 0: "Balanced conscientiousness", [-1]: "Leaning spontaneous", [-2]: "Freely spontaneous" },
+  e: { 2: "Energized by connection", 1: "Leaning outward", 0: "Balanced extraversion", [-1]: "Leaning inward", [-2]: "Powered by solitude" },
+  a: { 2: "Naturally trusting", 1: "Leaning trusting", 0: "Balanced agreeableness", [-1]: "Leaning independent", [-2]: "Fiercely independent" },
+  n: { 2: "Deeply feeling", 1: "Leaning feeling", 0: "Balanced emotionality", [-1]: "Leaning steady", [-2]: "Unshakably steady" },
 };
 
 const LEVELS: Record<number, BigFiveDimension["level"]> = {

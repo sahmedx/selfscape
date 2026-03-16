@@ -25,6 +25,10 @@ Selfscape is a mobile-first, visually immersive personality profile experience. 
 - **Share card generation:** HTML Canvas or server-side image generation
 - **No backend for MVP.** No accounts, no persistence. All state lives in the browser session.
 
+## Visual Design
+
+- See @docs/design-decisions.md
+
 ## Architecture Overview
 
 ### Input Flow
@@ -117,6 +121,8 @@ See @docs/master-plan.md
 - Motion library imports from `"motion/react"` (not `"framer-motion"`)
 - No test framework set up yet
 - No backend, no persistence — all state in React `useState`
+- When writing a plan, use the superpowers plugin (writing-plans skill).
+- After drafting a plan, spin up some sub-agents to review the plan that was created also using the superpowers plugin. Also create a separate sub-agent to check that the plan aligns to @docs/design-decisions.md
 
 ## Deferred (Post-MVP)
 - Audio/ambient sound per world

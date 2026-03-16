@@ -52,6 +52,8 @@ export default function Home() {
     setResult(null);
     removeFromSession(SESSION_KEYS.birthdateResult);
     removeFromSession(SESSION_KEYS.bigFiveScores);
+    removeFromSession(SESSION_KEYS.enneagramResult);
+    removeFromSession(SESSION_KEYS.mbtiResult);
   }
 
   return (

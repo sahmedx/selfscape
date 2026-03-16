@@ -4,7 +4,7 @@
 - [x] Step 2: Swipe interaction engine
 - [x] Step 3: Big Five world (first complete world)
 - [x] Step 4: Enneagram world
-- [ ] Step 5: MBTI optional input
+- [x] Step 5: MBTI optional input
 - [ ] Step 6: World map hub + navigation
 - [ ] Step 7: Visual compositing system
 - [ ] Step 8: LLM synthesis narrative
@@ -47,10 +47,18 @@
 - "Discover Your Inner World" link on results page navigates to `/enneagram`
 - "Back to Results" from Enneagram returns to `/`
 
+### MBTI Optional Input (Step 5)
+- Self-reported 4-letter type via toggle buttons (E/I, S/N, T/F, J/P)
+- Skip option for users who don't know their type
+- Results display with dimension breakdown and evocative type description
+- Session persistence via `sessionStorage`
+- "Enter Your Type" link on results page navigates to `/mbti`
+
 ### Routes
 - `/` — birthdate picker → results display
 - `/big-five` — Big Five personality assessment → results
 - `/enneagram` — Enneagram assessment (center → type → confirmation swipes → results)
+- `/mbti` — MBTI self-report (toggle selection → results)
 - `/swipe-demo` — swipe card interaction demo
 
 
