@@ -29,6 +29,8 @@ export interface SwipeCardData {
   leftLabel: string;
   rightLabel: string;
   prompt?: string;
+  leftDragLabel?: string;
+  rightDragLabel?: string;
 }
 
 export type SwipeDirection = "left" | "right";
@@ -36,4 +38,26 @@ export type SwipeDirection = "left" | "right";
 export interface SwipeResponse {
   cardId: string;
   direction: SwipeDirection;
+}
+
+export type BigFiveDimensionKey = "o" | "c" | "e" | "a" | "n";
+
+export interface BigFiveCardData extends SwipeCardData {
+  dimension: BigFiveDimensionKey;
+}
+
+export interface BigFiveScores {
+  o: number;
+  c: number;
+  e: number;
+  a: number;
+  n: number;
+}
+
+export interface BigFiveDimension {
+  key: BigFiveDimensionKey;
+  name: string;
+  score: number;
+  level: "high" | "moderate-high" | "moderate" | "moderate-low" | "low";
+  label: string;
 }
