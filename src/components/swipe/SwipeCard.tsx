@@ -97,7 +97,7 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
         {/* Card content */}
         <div className="flex flex-col items-center justify-center h-full px-6 gap-6">
           {card.prompt && (
-            <p className="text-foreground/60 text-sm text-center font-serif italic">
+            <p className="text-foreground/60 text-base text-center font-serif italic">
               {card.prompt}
             </p>
           )}
@@ -106,7 +106,7 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
               <p className="text-foreground/40 text-xs uppercase tracking-wider mb-2">
                 ← Swipe left
               </p>
-              <p className="text-foreground font-serif text-sm leading-relaxed">
+              <p className="text-foreground font-serif text-base leading-relaxed">
                 {card.leftLabel}
               </p>
             </div>
@@ -115,7 +115,7 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
               <p className="text-foreground/40 text-xs uppercase tracking-wider mb-2">
                 Swipe right →
               </p>
-              <p className="text-foreground font-serif text-sm leading-relaxed">
+              <p className="text-foreground font-serif text-base leading-relaxed">
                 {card.rightLabel}
               </p>
             </div>

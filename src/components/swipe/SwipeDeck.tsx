@@ -37,6 +37,12 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
     [cards, currentIndex, responses, onSwipe, onComplete]
   );
 
+  const handleUndo = useCallback(() => {
+    if (currentIndex === 0 || isAnimating) return;
+    setCurrentIndex((i) => i - 1);
+    setResponses((r) => r.slice(0, -1));
+  }, [currentIndex, isAnimating]);
+
   const triggerSwipe = useCallback(
     (direction: SwipeDirection) => {
       if (isAnimating || currentIndex >= cards.length) return;
@@ -55,11 +61,14 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
         triggerSwipe("right");
+      } else if (e.key === "Backspace") {
+        e.preventDefault();
+        handleUndo();
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [triggerSwipe]);
+  }, [triggerSwipe, handleUndo]);
 
   const isDone = currentIndex >= cards.length;
 
@@ -105,7 +114,7 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
 
       {/* Tap fallback buttons */}
       {!isDone && (
-        <div className="flex gap-12">
+        <div className="flex gap-8 items-center">
           <button
             onClick={() => triggerSwipe("left")}
             disabled={isAnimating}
@@ -114,6 +123,16 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
           >
             ←
           </button>
+          {currentIndex > 0 && (
+            <button
+              onClick={handleUndo}
+              disabled={isAnimating}
+              className="w-12 h-12 rounded-full border border-foreground/20 text-foreground/40 hover:text-foreground/60 hover:border-foreground/40 transition-colors flex items-center justify-center disabled:opacity-30"
+              aria-label="Undo last swipe"
+            >
+              ↩
+            </button>
+          )}
           <button
             onClick={() => triggerSwipe("right")}
             disabled={isAnimating}

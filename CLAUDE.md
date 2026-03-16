@@ -18,7 +18,7 @@ Selfscape is a mobile-first, visually immersive personality profile experience. 
 
 - **Framework:** React with Next.js
 - **Styling:** Tailwind CSS
-- **Swipe interactions:** Consider react-tinder-card, framer-motion, or similar
+- **Swipe interactions:** `motion` (v12) for drag gestures and card animations
 - **Zodiac/Ba Zi calculations:** Client-side JavaScript (lookup tables + modular arithmetic)
 - **LLM synthesis:** Claude API for real-time narrative generation
 - **Image compositing:** CSS filters, blend modes, absolutely positioned transparent overlays
@@ -103,18 +103,20 @@ Selfscape is a mobile-first, visually immersive personality profile experience. 
 | Yang Water | Ocean scene, massive waves, port city in storm, deep blues and greens |
 | Yin Water | Misty lake, gentle rain, reflections, riverside village, morning fog |
 
-## Current Build Status
+## Project Status
+See @docs/master-plan.md
 
-- [ ] Step 1: Birthdate input + zodiac/Ba Zi calculation
-- [ ] Step 2: Swipe interaction engine
-- [ ] Step 3: Big Five world (first complete world)
-- [ ] Step 4: Enneagram world
-- [ ] Step 5: MBTI optional input
-- [ ] Step 6: World map hub + navigation
-- [ ] Step 7: Visual compositing system
-- [ ] Step 8: LLM synthesis narrative
-- [ ] Step 9: Shareable portrait card + share flow
-- [ ] Step 10: Polish, animations, transitions
+## Conventions
+
+- All interactive components use `"use client"`
+- Tailwind CSS exclusively for styling (no CSS modules, no styled-components)
+- Font: Cormorant Garamond via `next/font/google`
+- Theme colors defined as CSS variables in `globals.css`: background `#0a0a14`, foreground `#e8e4dc`, gold `#c4a35a`
+- Types centralized in `src/lib/types.ts`
+- Calculation functions are pure (no side effects): `getWesternZodiac`, `getChineseZodiac`, `getDayMaster`
+- Motion library imports from `"motion/react"` (not `"framer-motion"`)
+- No test framework set up yet
+- No backend, no persistence — all state in React `useState`
 
 ## Deferred (Post-MVP)
 - Audio/ambient sound per world
@@ -122,4 +124,3 @@ Selfscape is a mobile-first, visually immersive personality profile experience. 
 - Birth time input (hour pillar)
 - Birth location input (Western rising sign)
 - Additional personality framework worlds
-- Desktop-optimized layout refinements

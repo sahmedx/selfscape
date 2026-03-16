@@ -1,3 +1,50 @@
+# Selfscape Build Status
+
+- [x] Step 1: Birthdate input + zodiac/Ba Zi calculation
+- [x] Step 2: Swipe interaction engine
+- [x] Step 3: Big Five world (first complete world)
+- [ ] Step 4: Enneagram world
+- [ ] Step 5: MBTI optional input
+- [ ] Step 6: World map hub + navigation
+- [ ] Step 7: Visual compositing system
+- [ ] Step 8: LLM synthesis narrative
+- [ ] Step 9: Shareable portrait card + share flow
+- [ ] Step 10: Polish, animations, transitions
+
+
+
+
+# What's Built
+
+### Birthdate Picker (Step 1)
+- Three CSS scroll-snap wheels (month/day/year) — no external picker library
+- Auto-computes Western zodiac, Chinese zodiac (with lunar new year adjustment), and Ba Zi day master
+- Results display with staggered fadeUp animations
+- Year range: 1920–2026; lunar new year lookup table in `src/data/lunar-new-year.ts`
+
+### Swipe Interaction Engine (Step 2)
+- `SwipeCard`: drag gesture with Hinge-style rotation + opacity, direction labels fade in/out
+- `SwipeDeck`: card stack manager with peek-behind next card, progress dots, keyboard (arrow keys) and tap button fallbacks
+- Cards animate off-screen via `useAnimation` controls, then fire `onSwipe` callback — no AnimatePresence needed
+- Demo page at `/swipe-demo` with 5 sample cards
+- Thresholds: 100px offset or 500px/s velocity to trigger swipe
+
+### Big Five World (Step 3)
+- 10 binary swipe cards (2 per dimension) interleaved across O/C/E/A/N
+- `SwipeCard` drag labels are now dynamic per card (`leftDragLabel`/`rightDragLabel` with fallback)
+- Scoring: each swipe is +1 (right) or -1 (left) on the card's dimension, range -2 to +2
+- Results display with evocative labels (e.g., "Boundlessly curious", "Powered by solitude")
+- `BigFiveResults` component with staggered fade-up animations
+- Session persistence via `sessionStorage` helpers (`src/lib/session.ts`) — birthdate results survive cross-route navigation
+- "Discover Your Nature" link on results page navigates to `/big-five`
+- "Back to Results" from Big Five returns to `/` with birthdate results restored
+
+### Routes
+- `/` — birthdate picker → results display
+- `/big-five` — Big Five personality assessment → results
+- `/swipe-demo` — swipe card interaction demo
+
+
 # Selfscape Build Plan
 
 This document outlines the step-by-step build sequence for Selfscape. Each step is scoped to be a single focused Claude Code session. Complete them in order, as each step builds on the previous one.

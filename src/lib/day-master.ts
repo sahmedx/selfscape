@@ -19,9 +19,9 @@ const STEMS: HeavenlyStem[] = [
   { name: "Guǐ", element: "Water", polarity: "Yin" },
 ];
 
-// Reference: Jan 1, 2000 = stem index 5 (Ji, Yin Earth)
+// Reference: Jan 1, 2000 = stem index 4 (Wu, Yang Earth)
 const REF_DATE = new Date(2000, 0, 1); // months are 0-indexed
-const REF_STEM_INDEX = 5;
+const REF_STEM_INDEX = 4;
 
 export function getDayMaster(year: number, month: number, day: number): DayMasterResult {
   const targetDate = new Date(year, month - 1, day);

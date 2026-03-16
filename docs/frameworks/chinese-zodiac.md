@@ -52,7 +52,7 @@ The heavenly stems cycle through 10 values, each combining an element with a pol
 The day pillar follows a 60-day sexagenary cycle (10 stems x 12 branches, but they cycle together, not as a full matrix). For the day master, we only need the heavenly stem (the element+polarity).
 
 **Method:**
-1. Choose a reference date with a known day stem. For example: January 1, 2000 = Stem 6 (Ji, Yin Earth). Verify this reference against a Ba Zi calculator.
+1. Choose a reference date with a known day stem. For example: January 1, 2000 = Stem 5 (Wu, Yang Earth). Verify this reference against a Ba Zi calculator.
 2. Calculate the number of days between the reference date and the target birthdate.
 3. Day stem index = (reference_stem_index + day_difference) mod 10
 4. Look up the element and polarity from the stem table.
