@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { BirthdateResult } from "@/lib/types";
 
 interface ResultsDisplayProps {
@@ -62,6 +63,15 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
       >
         Start Over
       </button>
+
+      {/* Navigate to Big Five */}
+      <Link
+        href="/big-five"
+        className="animate-fade-up inline-block mt-4 px-6 py-3 border border-gold/30 rounded-lg text-gold/70 hover:text-gold hover:border-gold transition-colors font-serif text-sm tracking-wide"
+        style={{ animationDelay: "1.2s" }}
+      >
+        Discover Your Nature
+      </Link>
     </div>
   );
 }
