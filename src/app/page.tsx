@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useSyncExternalStore } from "react";
 import BirthdatePicker from "@/components/BirthdatePicker";
-import ResultsDisplay from "@/components/ResultsDisplay";
+import WorldMap from "@/components/WorldMap";
 import { getWesternZodiac } from "@/lib/western-zodiac";
 import { getChineseZodiac } from "@/lib/chinese-zodiac";
 import { getDayMaster } from "@/lib/day-master";
@@ -57,11 +57,13 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center px-4">
+    <div className="min-h-svh">
       {displayResult ? (
-        <ResultsDisplay result={displayResult} onReset={handleReset} />
+        <WorldMap result={displayResult} onReset={handleReset} />
       ) : (
-        <BirthdatePicker onSubmit={handleSubmit} />
+        <div className="flex min-h-svh items-center justify-center px-4">
+          <BirthdatePicker onSubmit={handleSubmit} />
+        </div>
       )}
     </div>
   );
