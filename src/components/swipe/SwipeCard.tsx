@@ -85,13 +85,13 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
           className="absolute top-6 left-6 text-gold font-serif text-lg font-bold -rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
           style={{ opacity: leftLabelOpacity }}
         >
-          ← Left
+          ← {card.leftDragLabel ?? "Left"}
         </motion.div>
         <motion.div
           className="absolute top-6 right-6 text-gold font-serif text-lg font-bold rotate-12 border-2 border-gold rounded-md px-2 py-1 pointer-events-none"
           style={{ opacity: rightLabelOpacity }}
         >
-          Right →
+          {card.rightDragLabel ?? "Right"} →
         </motion.div>
 
         {/* Card content */}
