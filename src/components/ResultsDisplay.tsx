@@ -72,6 +72,15 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
       >
         Discover Your Nature
       </Link>
+
+      {/* Navigate to Enneagram */}
+      <Link
+        href="/enneagram"
+        className="animate-fade-up inline-block px-6 py-3 border border-gold/30 rounded-lg text-gold/70 hover:text-gold hover:border-gold transition-colors font-serif text-sm tracking-wide"
+        style={{ animationDelay: "1.5s" }}
+      >
+        Discover Your Inner World
+      </Link>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 export const SESSION_KEYS = {
   birthdateResult: "selfscape:birthdateResult",
   bigFiveScores: "selfscape:bigFiveScores",
+  enneagramResult: "selfscape:enneagramResult",
 } as const;
 
 export function saveToSession(key: string, value: unknown): void {

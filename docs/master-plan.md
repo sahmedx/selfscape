@@ -3,7 +3,7 @@
 - [x] Step 1: Birthdate input + zodiac/Ba Zi calculation
 - [x] Step 2: Swipe interaction engine
 - [x] Step 3: Big Five world (first complete world)
-- [ ] Step 4: Enneagram world
+- [x] Step 4: Enneagram world
 - [ ] Step 5: MBTI optional input
 - [ ] Step 6: World map hub + navigation
 - [ ] Step 7: Visual compositing system
@@ -39,9 +39,18 @@
 - "Discover Your Nature" link on results page navigates to `/big-five`
 - "Back to Results" from Big Five returns to `/` with birthdate results restored
 
+### Enneagram World (Step 4)
+- Three-screen flow: center selection (Body/Heart/Head), type selection (3 types per center), confirmation swipes (4 cards)
+- `CardSelector`: reusable tap-to-select component with motion animations and staggered entry
+- Scoring: primary type from paragraph selection, optional suggestion when confirmation swipes point to a different type
+- Session persistence via `sessionStorage` (`selfscape:enneagramResult`)
+- "Discover Your Inner World" link on results page navigates to `/enneagram`
+- "Back to Results" from Enneagram returns to `/`
+
 ### Routes
 - `/` — birthdate picker → results display
 - `/big-five` — Big Five personality assessment → results
+- `/enneagram` — Enneagram assessment (center → type → confirmation swipes → results)
 - `/swipe-demo` — swipe card interaction demo
 
 

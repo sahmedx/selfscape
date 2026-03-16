@@ -61,3 +61,33 @@ export interface BigFiveDimension {
   level: "high" | "moderate-high" | "moderate" | "moderate-low" | "low";
   label: string;
 }
+
+// Enneagram types
+
+export interface EnneagramCenter {
+  id: string;
+  name: string;
+  types: number[];
+  description: string;
+}
+
+export interface EnneagramType {
+  number: number;
+  name: string;
+  centerId: string;
+  description: string;
+  coreFear: string;
+  coreDesire: string;
+  growthDirection: string;
+  label: string;
+}
+
+export interface EnneagramConfirmCard extends SwipeCardData {
+  centerId: string;
+  rightType: number;
+}
+
+export interface EnneagramResult {
+  primaryType: EnneagramType;
+  suggestion: EnneagramType | null;
+}
