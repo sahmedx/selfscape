@@ -35,9 +35,10 @@ export default function Home() {
   );
 
   const [result, setResult] = useState<BirthdateResult | null>(null);
+  const [hasReset, setHasReset] = useState(false);
 
-  // Use local state if set, otherwise fall back to session
-  const displayResult = result ?? savedResult;
+  // Use local state if set, otherwise fall back to session (unless user has reset)
+  const displayResult = result ?? (hasReset ? null : savedResult);
 
   function handleSubmit(month: number, day: number, year: number) {
     const western = getWesternZodiac(month, day);
@@ -45,11 +46,13 @@ export default function Home() {
     const dayMaster = getDayMaster(year, month, day);
     const res = { month, day, year, western, chinese, dayMaster };
     setResult(res);
+    setHasReset(false);
     saveToSession(SESSION_KEYS.birthdateResult, res);
   }
 
   function handleReset() {
     setResult(null);
+    setHasReset(true);
     removeFromSession(SESSION_KEYS.birthdateResult);
     removeFromSession(SESSION_KEYS.bigFiveScores);
     removeFromSession(SESSION_KEYS.enneagramResult);

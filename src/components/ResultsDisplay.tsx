@@ -14,6 +14,34 @@ interface ResultsDisplayProps {
   onReset: () => void;
 }
 
+const STEM_DESCRIPTORS: Record<string, string> = {
+  "Jiǎ": "The Forest",
+  "Yǐ": "The Garden",
+  "Bǐng": "The Sun",
+  "Dīng": "The Candle",
+  "Wù": "The Mountain",
+  "Jǐ": "The Meadow",
+  "Gēng": "The Sword",
+  "Xīn": "The Jewel",
+  "Rén": "The Ocean",
+  "Guǐ": "The Rain",
+};
+
+const SIGN_DESCRIPTIONS: Record<string, string> = {
+  Aries: "Driven through courage and instinct",
+  Taurus: "Grounded through patience and loyalty",
+  Gemini: "Adaptable through communication and curiosity",
+  Cancer: "Driven through nurturing and feeling",
+  Leo: "Grounded through creativity and pride",
+  Virgo: "Adaptable through analysis and refinement",
+  Libra: "Driven through connection and balance",
+  Scorpio: "Grounded through intensity and will",
+  Sagittarius: "Adaptable through philosophy and exploration",
+  Capricorn: "Driven through ambition and structure",
+  Aquarius: "Grounded through vision and principle",
+  Pisces: "Adaptable through intuition and fluidity",
+};
+
 export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps) {
   const { western, dayMaster } = result;
 
@@ -46,9 +74,11 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
         <h2 className="text-4xl font-light tracking-wide sm:text-4xl">
           {western.sign}
         </h2>
-        <p className="mt-2 text-base text-foreground/50">
-          {western.element} &middot; {western.modality}
-        </p>
+        {SIGN_DESCRIPTIONS[western.sign] && (
+          <p className="mt-2 text-sm italic text-foreground/40">
+            {western.element} &middot; {SIGN_DESCRIPTIONS[western.sign]}
+          </p>
+        )}
       </div>
 
       {/* Chinese Zodiac — Year Pillar */}
@@ -60,11 +90,13 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           Year Pillar
         </p>
         <h2 className="text-4xl font-light tracking-wide sm:text-4xl">
-          {chinese.year.branch}
+          {chinese.year.stemElement} {chinese.year.branch}
         </h2>
-        <p className="mt-2 text-base text-foreground/50">
-          {chinese.year.stemPolarity} {chinese.year.stemElement} &middot; {chinese.year.stem}
-        </p>
+        {STEM_DESCRIPTORS[chinese.year.stem] && (
+          <p className="mt-2 text-sm italic text-foreground/40">
+            {STEM_DESCRIPTORS[chinese.year.stem]} &middot; {chinese.year.stemPolarity}
+          </p>
+        )}
       </div>
 
       {/* Chinese Zodiac — Month Pillar */}
@@ -76,11 +108,13 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           Month Pillar
         </p>
         <h2 className="text-4xl font-light tracking-wide sm:text-4xl">
-          {chinese.month.branch}
+          {chinese.month.stemElement} {chinese.month.branch}
         </h2>
-        <p className="mt-2 text-base text-foreground/50">
-          {chinese.month.stemPolarity} {chinese.month.stemElement} &middot; {chinese.month.stem}
-        </p>
+        {STEM_DESCRIPTORS[chinese.month.stem] && (
+          <p className="mt-2 text-sm italic text-foreground/40">
+            {STEM_DESCRIPTORS[chinese.month.stem]} &middot; {chinese.month.stemPolarity}
+          </p>
+        )}
       </div>
 
       {/* Chinese Zodiac — Day Pillar */}
@@ -92,23 +126,25 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           Day Pillar
         </p>
         <h2 className="text-4xl font-light tracking-wide sm:text-4xl">
-          {chinese.day.branch}
+          {chinese.day.stemElement} {chinese.day.branch}
         </h2>
-        <p className="mt-2 text-base text-foreground/50">
-          {chinese.day.stemPolarity} {chinese.day.stemElement} &middot; {chinese.day.stem}
-        </p>
+        {STEM_DESCRIPTORS[chinese.day.stem] && (
+          <p className="mt-2 text-sm italic text-foreground/40">
+            {STEM_DESCRIPTORS[chinese.day.stem]} &middot; {chinese.day.stemPolarity}
+          </p>
+        )}
       </div>
 
-      {/* Start Over */}
+      {/* Change Birthdate */}
       <button
         onClick={() => {
           removeFromSession(SESSION_KEYS.narrativeResult);
           onReset();
         }}
-        className="animate-fade-up cursor-pointer text-sm tracking-wide text-foreground/40 transition-colors hover:text-foreground/70"
+        className="animate-fade-up cursor-pointer text-xs tracking-wide text-foreground/30 transition-colors hover:text-foreground/50"
         style={{ animationDelay: "0.9s" }}
       >
-        Start Over
+        Change Birthdate
       </button>
 
       {/* Big Five World Card */}
@@ -168,6 +204,23 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
             <p className="mt-1 text-sm italic text-gold/70">
               {enneagramResult.primaryType.label}
             </p>
+            <div className="mt-4 flex flex-col gap-2 text-left">
+              <p className="text-xs text-foreground/40">
+                <span className="uppercase tracking-wider text-gold/50">Core Fear</span>
+                <br />
+                <span className="text-foreground/50">{enneagramResult.primaryType.coreFear}</span>
+              </p>
+              <p className="text-xs text-foreground/40">
+                <span className="uppercase tracking-wider text-gold/50">Core Desire</span>
+                <br />
+                <span className="text-foreground/50">{enneagramResult.primaryType.coreDesire}</span>
+              </p>
+              <p className="text-xs text-foreground/40">
+                <span className="uppercase tracking-wider text-gold/50">Growth Direction</span>
+                <br />
+                <span className="text-foreground/50">{enneagramResult.primaryType.growthDirection}</span>
+              </p>
+            </div>
             <Link
               href="/enneagram"
               className="mt-4 inline-block text-xs text-foreground/30 transition-colors hover:text-foreground/50"
@@ -229,6 +282,18 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
       >
         <NarrativePortrait result={result} />
       </div>
+
+      {/* Start Over */}
+      <button
+        onClick={() => {
+          removeFromSession(SESSION_KEYS.narrativeResult);
+          onReset();
+        }}
+        className="animate-fade-up cursor-pointer text-sm tracking-wide text-foreground/40 transition-colors hover:text-foreground/70"
+        style={{ animationDelay: "2.4s" }}
+      >
+        Start Over
+      </button>
     </div>
   );
 }

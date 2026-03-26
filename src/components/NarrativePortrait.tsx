@@ -13,6 +13,7 @@ import {
   removeFromSession,
   SESSION_KEYS,
 } from "@/lib/session";
+import { calculateBaziChart } from "@/lib/bazi-calculator";
 
 type NarrativeState = "idle" | "loading" | "streaming" | "complete" | "error";
 
@@ -44,12 +45,97 @@ function buildRequest(result: BirthdateResult): NarrativeRequest {
     req.enneagram = {
       primaryType: enneagram.primaryType.number,
       primaryName: enneagram.primaryType.name,
+      coreFear: enneagram.primaryType.coreFear,
+      coreDesire: enneagram.primaryType.coreDesire,
+      growthDirection: enneagram.primaryType.growthDirection,
       suggestion: enneagram.suggestion?.number,
     };
   }
   if (mbti) req.mbti = mbti;
 
+  // Calculate full BaZi chart
+  const dateStr = `${result.year}-${String(result.month).padStart(2, '0')}-${String(result.day).padStart(2, '0')}`;
+  const chart = calculateBaziChart(dateStr);
+  req.bazi = {
+    tenGods: chart.tenGods,
+    elementalBalance: {
+      percentages: chart.elementalBalance.percentages,
+      dominant: chart.elementalBalance.dominant,
+      scarce: chart.elementalBalance.scarce,
+      absent: chart.elementalBalance.absent,
+    },
+    luckPillars: {
+      startingAge: chart.luckPillars.startingAge,
+      isForward: chart.luckPillars.isForward,
+      pillars: chart.luckPillars.pillars.map(p => ({
+        age: p.age,
+        stem: { name: p.stem.name, element: p.stem.element, polarity: p.stem.polarity },
+        branch: { name: p.branch.name, element: p.branch.element },
+        naYin: p.naYin,
+      })),
+    },
+    naYin: {
+      year: chart.pillars.year.naYin,
+      month: chart.pillars.month.naYin,
+      day: chart.pillars.day.naYin,
+    },
+  };
+
   return req;
+}
+
+const SECTION_LABELS = ["Your Portrait", "What Drives You", "How You Think", "Relationship Style", "Internal Conflict", "Misread As"];
+
+interface NarrativeSection {
+  label: string;
+  text: string;
+}
+
+function parseNarrative(raw: string): NarrativeSection[] {
+  const sections: NarrativeSection[] = [];
+  let remaining = raw;
+
+  // Skip any text before the first section marker
+  const firstMarkerIndex = SECTION_LABELS.reduce((min, label) => {
+    const pattern = new RegExp(`\\*\\*${label}\\*\\*`);
+    const match = remaining.match(pattern);
+    if (match && match.index !== undefined && match.index < min) return match.index;
+    return min;
+  }, remaining.length);
+  remaining = remaining.slice(firstMarkerIndex);
+
+  // Extract each labeled section
+  for (let i = 0; i < SECTION_LABELS.length; i++) {
+    const label = SECTION_LABELS[i];
+    const pattern = new RegExp(`\\*\\*${label}\\*\\*`);
+    const match = remaining.match(pattern);
+    if (!match || match.index === undefined) continue;
+
+    const contentStart = match.index + match[0].length;
+    // Find the next section marker
+    let nextMarkerIndex = remaining.length;
+    for (let j = i + 1; j < SECTION_LABELS.length; j++) {
+      const nextPattern = new RegExp(`\\*\\*${SECTION_LABELS[j]}\\*\\*`);
+      const nextMatch = remaining.match(nextPattern);
+      if (nextMatch && nextMatch.index !== undefined) {
+        nextMarkerIndex = nextMatch.index;
+        break;
+      }
+    }
+
+    const text = remaining.slice(contentStart, nextMarkerIndex).trim();
+    if (text) {
+      sections.push({ label, text });
+    }
+    remaining = remaining.slice(nextMarkerIndex);
+  }
+
+  // If no sections were parsed (e.g. during early streaming), show as single block
+  if (sections.length === 0 && raw.trim()) {
+    sections.push({ label: "Your Portrait", text: raw.trim() });
+  }
+
+  return sections;
 }
 
 export default function NarrativePortrait({ result }: NarrativePortraitProps) {
@@ -107,8 +193,10 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
     }
   }, [result]);
 
+  const sections = parseNarrative(narrative);
+
   return (
-    <div className="w-full max-w-sm text-center">
+    <div className="w-full max-w-xs text-center">
       {state === "idle" && (
         <button
           onClick={generate}
@@ -125,10 +213,21 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
       )}
 
       {(state === "streaming" || state === "complete") && (
-        <div className="space-y-6">
-          <p className="text-base leading-relaxed text-foreground/70">
-            {narrative}
-          </p>
+        <div className="flex flex-col gap-4">
+          {sections.map((section, i) => (
+            <div
+              key={section.label}
+              className="animate-fade-up rounded-xl border border-gold/20 p-5"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            >
+              <p className="mb-3 text-sm uppercase tracking-widest text-gold/60">
+                {section.label}
+              </p>
+              <p className="text-sm leading-relaxed text-foreground/70">
+                {section.text}
+              </p>
+            </div>
+          ))}
           {state === "complete" && (
             <button
               onClick={generate}

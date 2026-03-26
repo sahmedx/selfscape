@@ -126,6 +126,26 @@ export interface NarrativeRequest {
   };
   dayMaster: { element: string; polarity: string };
   bigFive?: { o: number; c: number; e: number; a: number; n: number };
-  enneagram?: { primaryType: number; primaryName: string; suggestion?: number };
+  enneagram?: { primaryType: number; primaryName: string; coreFear: string; coreDesire: string; growthDirection: string; suggestion?: number };
   mbti?: string;
+  bazi?: {
+    tenGods: Record<string, string>;
+    elementalBalance: {
+      percentages: Record<string, number>;
+      dominant: string[];
+      scarce: string[];
+      absent: string[];
+    };
+    luckPillars: {
+      startingAge: number;
+      isForward: boolean;
+      pillars: Array<{
+        age: number;
+        stem: { name: string; element: string; polarity: string };
+        branch: { name: string; element: string };
+        naYin: string;
+      }>;
+    };
+    naYin: { year: string; month: string; day: string };
+  };
 }
