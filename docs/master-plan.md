@@ -5,9 +5,9 @@
 - [x] Step 3: Big Five world (first complete world)
 - [x] Step 4: Enneagram world
 - [x] Step 5: MBTI optional input
-- [ ] Step 6: World map hub + navigation
-- [ ] Step 7: Visual compositing system
-- [ ] Step 8: LLM synthesis narrative
+- [ ] ~~Step 6: World map hub + navigation~~ (skipped — simplified to inline home page)
+- [ ] ~~Step 7: Visual compositing system~~ (skipped — no world map)
+- [x] Step 8: LLM synthesis narrative (simplified — inline on home page)
 - [ ] Step 9: Shareable portrait card + share flow
 - [ ] Step 10: Polish, animations, transitions
 
@@ -54,8 +54,36 @@
 - Session persistence via `sessionStorage`
 - "Enter Your Type" link on results page navigates to `/mbti`
 
+### LLM Personality Narrative (Step 8 — simplified)
+- "Generate My Portrait" button on home page, available immediately after birthdate entry (no minimum assessment requirement)
+- Next.js API route (`/api/narrative`) calls Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) with streaming
+- API key stored server-side in `.env.local` (`ANTHROPIC_API_KEY`), never exposed to browser
+- Full BaZi chart calculated client-side via `src/lib/bazi-calculator.ts` and sent to the API — includes ten gods, elemental balance, Na Yin, and luck pillars
+- Structured system prompt produces six labeled sections: Your Portrait, What Drives You, How You Think, Relationship Style, Internal Conflict, Misread As
+- Each section displayed as an individual card with gold uppercase label, matching existing card styling
+- Narrative streams token-by-token via `ReadableStream` / `TextDecoder`; cards appear progressively as sections complete
+- Completed narrative cached in `sessionStorage` (`selfscape:narrativeResult`); "Regenerate" button re-reads current session data (picking up newly completed assessments) and streams fresh narrative
+- "Start Over" and "Change Birthdate" buttons clear all data including narrative cache
+- Ref-based guard prevents double-tap concurrent requests
+- Dependencies added: `@anthropic-ai/sdk`
+
+### BaZi Calculator
+- Full BaZi chart calculation from birthdate in `src/lib/bazi-calculator.ts`
+- Calculates three pillars (year, month, day) with heavenly stems, earthly branches, and Na Yin elements
+- Derives day master, hidden stems (weighted by qi strength), ten gods, elemental balance (percentage breakdown with dominant/scarce/absent), and eight luck pillars
+- Solar term dates approximated; hour pillar excluded (no birth time collected)
+- Output passed to the narrative API for richer, BaZi-grounded personality profiles
+
+### Home Page Enhancements
+- Western zodiac card: shows element + modality descriptor (e.g., "Air · Driven through connection and balance")
+- Chinese zodiac pillar cards: heading shows "Element Animal" (e.g., "Wood Pig"), subtitle shows stem descriptor + polarity (e.g., "The Garden · Yin")
+- Enneagram card: now displays core fear, core desire, and growth direction below the type label
+- "Change Birthdate" button between Day Pillar and assessment cards
+- "Start Over" button moved to bottom of page, after the narrative section
+
 ### Routes
-- `/` — birthdate picker → results display
+- `/` — birthdate picker → results display → narrative portrait
+- `/api/narrative` — POST endpoint, streams Claude-generated personality narrative
 - `/big-five` — Big Five personality assessment → results
 - `/enneagram` — Enneagram assessment (center → type → confirmation swipes → results)
 - `/mbti` — MBTI self-report (toggle selection → results)
