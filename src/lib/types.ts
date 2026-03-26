@@ -113,3 +113,19 @@ export interface MBTIDimension {
 }
 
 export type MBTIResult = string; // 4-letter string like "INFJ"
+
+// Narrative types
+
+export interface NarrativeRequest {
+  westernZodiac: { sign: string; element: string; modality: string };
+  chineseZodiac: {
+    animal: string;
+    yearPillar: ChinesePillar;
+    monthPillar: ChinesePillar;
+    dayPillar: ChinesePillar;
+  };
+  dayMaster: { element: string; polarity: string };
+  bigFive?: { o: number; c: number; e: number; a: number; n: number };
+  enneagram?: { primaryType: number; primaryName: string; suggestion?: number };
+  mbti?: string;
+}
