@@ -3,10 +3,11 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { BirthdateResult, BigFiveScores, EnneagramResult } from "@/lib/types";
-import { loadFromSession, SESSION_KEYS } from "@/lib/session";
+import { loadFromSession, removeFromSession, SESSION_KEYS } from "@/lib/session";
 import { getBigFiveProfile } from "@/lib/big-five-scoring";
 import { MBTI_TYPE_DESCRIPTIONS } from "@/data/mbti-data";
 import { getChineseZodiac } from "@/lib/chinese-zodiac";
+import NarrativePortrait from "./NarrativePortrait";
 
 interface ResultsDisplayProps {
   result: BirthdateResult;
@@ -100,7 +101,10 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
 
       {/* Start Over */}
       <button
-        onClick={onReset}
+        onClick={() => {
+          removeFromSession(SESSION_KEYS.narrativeResult);
+          onReset();
+        }}
         className="animate-fade-up cursor-pointer text-sm tracking-wide text-foreground/40 transition-colors hover:text-foreground/70"
         style={{ animationDelay: "0.9s" }}
       >
@@ -216,6 +220,14 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
             Enter Your Type
           </Link>
         )}
+      </div>
+
+      {/* Personality Narrative */}
+      <div
+        className="animate-fade-up"
+        style={{ animationDelay: "2.1s" }}
+      >
+        <NarrativePortrait result={result} />
       </div>
     </div>
   );
