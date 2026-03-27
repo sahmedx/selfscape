@@ -1,73 +1,41 @@
 // ============================================================
-// BaZi Calculator
+// BaZi Calculator — single source of truth for all BaZi calculations
 // Input: birthdate (YYYY-MM-DD string), gender ('male' | 'female')
 // Output: structured chart object with pillars, hidden stems,
-//         ten gods, elemental balance, and luck pillars
+//         ten gods, elemental balance, luck pillars, branch
+//         relationships, day master strength, and yin/yang balance
 // Note: Hour pillar excluded (no birth time collected)
 // ============================================================
 
-// ------------------------------------------------------------
-// TYPES
-// ------------------------------------------------------------
+import { LUNAR_NEW_YEAR } from "@/data/lunar-new-year";
+import type {
+  BaZiStem,
+  BaZiBranch,
+  BaZiPillar,
+  BaZiChart,
+  BaZiElementalBalance,
+  BaZiLuckPillar,
+  BaZiLuckPillars,
+  BaZiBranchRelationships,
+  BaZiDayMasterStrength,
+  BaZiYinYangBalance,
+  BaZiCurrentLuckPillar,
+} from "./types";
 
-export interface BaZiStem {
-  id: number;
-  name: string;
-  element: string;
-  polarity: string;
-}
-
-export interface BaZiBranch {
-  id: number;
-  name: string;
-  element: string;
-  polarity: string;
-  zodiac: string;
-}
-
-export interface BaZiPillar {
-  label: string;
-  stem: BaZiStem;
-  branch: BaZiBranch;
-  sexagenaryIndex: number;
-  naYin: string;
-}
-
-export interface BaZiElementalBalance {
-  raw: Record<string, number>;
-  percentages: Record<string, number>;
-  dominant: string[];
-  scarce: string[];
-  absent: string[];
-}
-
-export interface BaZiLuckPillar {
-  age: number;
-  stem: BaZiStem;
-  branch: BaZiBranch;
-  sexagenaryIndex: number;
-  naYin: string;
-}
-
-export interface BaZiLuckPillars {
-  startingAge: number;
-  isForward: boolean;
-  pillars: BaZiLuckPillar[];
-}
-
-export interface BaZiChart {
-  birthDate: string;
-  gender: string;
-  dayMaster: BaZiStem;
-  pillars: {
-    year: BaZiPillar;
-    month: BaZiPillar;
-    day: BaZiPillar;
-  };
-  tenGods: Record<string, string>;
-  elementalBalance: BaZiElementalBalance;
-  luckPillars: BaZiLuckPillars;
-}
+// Re-export types for consumers that import from this file
+export type {
+  BaZiStem,
+  BaZiBranch,
+  BaZiPillar,
+  BaZiChart,
+  BaZiElementalBalance,
+  BaZiLuckPillar,
+  BaZiLuckPillars,
+  BaZiBranchRelationships,
+  BaZiDayMasterStrength,
+  BaZiYinYangBalance,
+  BaZiCurrentLuckPillar,
+};
 
 // ------------------------------------------------------------
 // LOOKUP TABLES
@@ -102,7 +70,6 @@ const BRANCHES: BaZiBranch[] = [
 ];
 
 // Hidden stems per branch: [mainQi, middleQi?, residualQi?]
-// Each entry is a stem index (0-9)
 const HIDDEN_STEMS: Record<number, number[]> = {
   0:  [9],           // Rat:     Gui Water
   1:  [5, 9, 6],    // Ox:      Ji Earth, Gui Water, Xin Metal
@@ -118,34 +85,8 @@ const HIDDEN_STEMS: Record<number, number[]> = {
   11: [8, 0],        // Pig:     Ren Water, Jia Wood
 };
 
-// Ten Gods lookup
-function getTenGod(dayMaster: BaZiStem, target: BaZiStem): string {
-  const sameElement = dayMaster.element === target.element;
-  const samePolarity = dayMaster.polarity === target.polarity;
-
-  const produces: Record<string, string> = { Wood: 'Fire', Fire: 'Earth', Earth: 'Metal', Metal: 'Water', Water: 'Wood' };
-  const controls: Record<string, string> = { Wood: 'Earth', Fire: 'Metal', Earth: 'Water', Metal: 'Wood', Water: 'Fire' };
-  const controlledBy: Record<string, string> = { Earth: 'Wood', Metal: 'Fire', Water: 'Earth', Wood: 'Metal', Fire: 'Water' };
-  const producedBy: Record<string, string> = { Fire: 'Wood', Earth: 'Fire', Metal: 'Earth', Water: 'Metal', Wood: 'Water' };
-
-  if (sameElement) {
-    return samePolarity ? 'Companion' : 'Rob Wealth';
-  }
-  if (produces[dayMaster.element] === target.element) {
-    return samePolarity ? 'Eating God' : 'Hurting Officer';
-  }
-  if (controls[dayMaster.element] === target.element) {
-    return samePolarity ? 'Direct Wealth' : 'Indirect Wealth';
-  }
-  if (controlledBy[dayMaster.element] === target.element) {
-    return samePolarity ? 'Seven Killings' : 'Direct Officer';
-  }
-  if (producedBy[dayMaster.element] === target.element) {
-    return samePolarity ? 'Direct Resource' : 'Indirect Resource';
-  }
-
-  return 'Unknown';
-}
+// Qi weights for hidden stems: main qi, middle qi, residual qi
+const HIDDEN_STEM_WEIGHTS = [3, 2, 1];
 
 // Na Yin elements -- 30 pairs covering the full 60-cycle
 const NA_YIN: string[] = [
@@ -182,10 +123,45 @@ const NA_YIN: string[] = [
 ];
 
 // ------------------------------------------------------------
+// FIVE ELEMENT RELATIONSHIPS
+// ------------------------------------------------------------
+
+const PRODUCES: Record<string, string> = { Wood: 'Fire', Fire: 'Earth', Earth: 'Metal', Metal: 'Water', Water: 'Wood' };
+const PRODUCED_BY: Record<string, string> = { Fire: 'Wood', Earth: 'Fire', Metal: 'Earth', Water: 'Metal', Wood: 'Water' };
+const CONTROLS: Record<string, string> = { Wood: 'Earth', Fire: 'Metal', Earth: 'Water', Metal: 'Wood', Water: 'Fire' };
+const CONTROLLED_BY: Record<string, string> = { Earth: 'Wood', Metal: 'Fire', Water: 'Earth', Wood: 'Metal', Fire: 'Water' };
+
+// ------------------------------------------------------------
+// TEN GODS
+// ------------------------------------------------------------
+
+function getTenGod(dayMaster: BaZiStem, target: BaZiStem): string {
+  const sameElement = dayMaster.element === target.element;
+  const samePolarity = dayMaster.polarity === target.polarity;
+
+  if (sameElement) {
+    return samePolarity ? 'Companion' : 'Rob Wealth';
+  }
+  if (PRODUCES[dayMaster.element] === target.element) {
+    return samePolarity ? 'Eating God' : 'Hurting Officer';
+  }
+  if (CONTROLS[dayMaster.element] === target.element) {
+    return samePolarity ? 'Direct Wealth' : 'Indirect Wealth';
+  }
+  if (CONTROLLED_BY[dayMaster.element] === target.element) {
+    return samePolarity ? 'Seven Killings' : 'Direct Officer';
+  }
+  if (PRODUCED_BY[dayMaster.element] === target.element) {
+    return samePolarity ? 'Direct Resource' : 'Indirect Resource';
+  }
+
+  return 'Unknown';
+}
+
+// ------------------------------------------------------------
 // SOLAR TERMS
 // ------------------------------------------------------------
 
-// Solar term start dates (month, approx day) indexed by branch
 const SOLAR_TERM_STARTS: Record<number, [number, number]> = {
   2:  [2,  4],  // Tiger:   Lichun,    ~Feb 4
   3:  [3,  6],  // Rabbit:  Jingzhe,   ~Mar 6
@@ -200,6 +176,202 @@ const SOLAR_TERM_STARTS: Record<number, [number, number]> = {
   0:  [12, 7],  // Rat:     Daxue,     ~Dec 7
   1:  [1,  6],  // Ox:      Xiaohan,   ~Jan 6
 };
+
+// ------------------------------------------------------------
+// BRANCH RELATIONSHIPS
+// ------------------------------------------------------------
+
+const SIX_CLASHES: [number, number][] = [
+  [0, 6],   // Rat - Horse
+  [1, 7],   // Ox - Goat
+  [2, 8],   // Tiger - Monkey
+  [3, 9],   // Rabbit - Rooster
+  [4, 10],  // Dragon - Dog
+  [5, 11],  // Snake - Pig
+];
+
+const SIX_HARMONIES: [number, number][] = [
+  [0, 1],   // Rat - Ox
+  [2, 11],  // Tiger - Pig
+  [3, 10],  // Rabbit - Dog
+  [4, 9],   // Dragon - Rooster
+  [5, 8],   // Snake - Monkey
+  [6, 7],   // Horse - Goat
+];
+
+const THREE_HARMONIES: [number, number, number, string][] = [
+  [8, 0, 4, 'Water'],    // Monkey - Rat - Dragon
+  [2, 6, 10, 'Fire'],    // Tiger - Horse - Dog
+  [5, 9, 1, 'Metal'],    // Snake - Rooster - Ox
+  [11, 3, 7, 'Wood'],    // Pig - Rabbit - Goat
+];
+
+const SELF_PENALTY_BRANCHES = new Set([0, 6, 4, 9, 3]); // Rat, Horse, Dragon, Rooster, Rabbit
+
+const GROUP_PENALTIES: number[][] = [
+  [1, 7, 10],    // Ox - Goat - Dog (Ungrateful Penalty)
+  [2, 5, 8],     // Tiger - Snake - Monkey (Graceless Penalty)
+];
+
+const PILLAR_LABELS = ['Year', 'Month', 'Day'];
+
+function getBranchRelationships(pillars: BaZiPillar[]): BaZiBranchRelationships {
+  const branchIds = pillars.map(p => p.branch.id);
+  const clashes: string[] = [];
+  const harmonies: string[] = [];
+  const threeHarmonies: string[] = [];
+  const penalties: string[] = [];
+
+  // Check all pairs
+  for (let i = 0; i < branchIds.length; i++) {
+    for (let j = i + 1; j < branchIds.length; j++) {
+      const a = branchIds[i];
+      const b = branchIds[j];
+      const label = `${PILLAR_LABELS[i]}-${PILLAR_LABELS[j]}`;
+
+      for (const [c1, c2] of SIX_CLASHES) {
+        if ((a === c1 && b === c2) || (a === c2 && b === c1)) {
+          clashes.push(`${label}: ${BRANCHES[a].zodiac}-${BRANCHES[b].zodiac}`);
+        }
+      }
+
+      for (const [h1, h2] of SIX_HARMONIES) {
+        if ((a === h1 && b === h2) || (a === h2 && b === h1)) {
+          harmonies.push(`${label}: ${BRANCHES[a].zodiac}-${BRANCHES[b].zodiac}`);
+        }
+      }
+    }
+  }
+
+  // Self-penalties (same branch in two pillars)
+  for (let i = 0; i < branchIds.length; i++) {
+    for (let j = i + 1; j < branchIds.length; j++) {
+      if (branchIds[i] === branchIds[j] && SELF_PENALTY_BRANCHES.has(branchIds[i])) {
+        penalties.push(`${PILLAR_LABELS[i]}-${PILLAR_LABELS[j]} Self-Penalty: ${BRANCHES[branchIds[i]].zodiac}`);
+      }
+    }
+  }
+
+  // Group penalties (need at least 2 of 3 members present)
+  for (const group of GROUP_PENALTIES) {
+    const present = group.filter(id => branchIds.includes(id));
+    if (present.length >= 2) {
+      const names = present.map(id => BRANCHES[id].zodiac).join('-');
+      penalties.push(`Group Penalty: ${names}`);
+    }
+  }
+
+  // Three Harmonies (need at least 2 of 3 members present)
+  for (const [a, b, c, element] of THREE_HARMONIES) {
+    const members = [a, b, c];
+    const present = members.filter(id => branchIds.includes(id));
+    if (present.length >= 2) {
+      const names = present.map(id => BRANCHES[id].zodiac).join('-');
+      const full = present.length === 3 ? 'Full' : 'Partial';
+      threeHarmonies.push(`${full} ${element} Triangle: ${names}`);
+    }
+  }
+
+  return { clashes, harmonies, threeHarmonies, penalties };
+}
+
+// ------------------------------------------------------------
+// YIN/YANG BALANCE
+// ------------------------------------------------------------
+
+function getYinYangBalance(pillars: BaZiPillar[]): BaZiYinYangBalance {
+  let yin = 0;
+  let yang = 0;
+
+  for (const pillar of pillars) {
+    if (pillar.stem.polarity === 'Yang') yang++; else yin++;
+    if (pillar.branch.polarity === 'Yang') yang++; else yin++;
+  }
+
+  let ratio: string;
+  if (yang - yin >= 4) ratio = 'Strongly Yang';
+  else if (yang - yin >= 2) ratio = 'Yang-dominant';
+  else if (yin - yang >= 4) ratio = 'Strongly Yin';
+  else if (yin - yang >= 2) ratio = 'Yin-dominant';
+  else ratio = 'Balanced';
+
+  return { yin, yang, ratio };
+}
+
+// ------------------------------------------------------------
+// DAY MASTER STRENGTH
+// ------------------------------------------------------------
+
+function getDayMasterStrength(dayMaster: BaZiStem, pillars: BaZiPillar[]): BaZiDayMasterStrength {
+  const dmElement = dayMaster.element;
+  const resourceElement = PRODUCED_BY[dmElement];
+
+  let supportWeight = 0;
+  let drainWeight = 0;
+
+  function classifyStem(stemIndex: number, weight: number) {
+    const el = STEMS[stemIndex].element;
+    if (el === dmElement || el === resourceElement) {
+      supportWeight += weight;
+    } else {
+      drainWeight += weight;
+    }
+  }
+
+  for (const pillar of pillars) {
+    // Visible stems (skip day master itself for the day pillar)
+    if (pillar.label !== 'day') {
+      classifyStem(pillar.stem.id, 2);
+    }
+
+    // Hidden stems
+    const hidden = HIDDEN_STEMS[pillar.branch.id];
+    const weights = HIDDEN_STEM_WEIGHTS;
+    hidden.forEach((stemIdx, i) => classifyStem(stemIdx, weights[i]));
+  }
+
+  // Seasonal modifier: month branch's main qi element
+  const monthBranch = pillars[1].branch;
+  if (monthBranch.element === dmElement || monthBranch.element === resourceElement) {
+    supportWeight += 3;
+  }
+
+  let assessment: 'strong' | 'weak' | 'balanced';
+  const ratio = supportWeight / (supportWeight + drainWeight || 1);
+  if (ratio >= 0.55) assessment = 'strong';
+  else if (ratio <= 0.40) assessment = 'weak';
+  else assessment = 'balanced';
+
+  return { assessment, supportScore: supportWeight, drainScore: drainWeight };
+}
+
+// ------------------------------------------------------------
+// CURRENT LUCK PILLAR
+// ------------------------------------------------------------
+
+function getCurrentLuckPillar(
+  birthDateStr: string,
+  luckPillars: BaZiLuckPillars,
+  currentDate: Date = new Date()
+): BaZiCurrentLuckPillar | null {
+  const birth = new Date(birthDateStr + 'T12:00:00Z');
+  const ageMs = currentDate.getTime() - birth.getTime();
+  const age = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+
+  if (age < 0 || luckPillars.pillars.length === 0) return null;
+
+  // Find the luck pillar whose age range covers the current age
+  for (let i = luckPillars.pillars.length - 1; i >= 0; i--) {
+    if (age >= luckPillars.pillars[i].age) {
+      return {
+        pillar: luckPillars.pillars[i],
+        ageInPillar: age - luckPillars.pillars[i].age,
+      };
+    }
+  }
+
+  return null;
+}
 
 // ------------------------------------------------------------
 // PILLAR CALCULATIONS
@@ -248,11 +420,12 @@ function getMonthStemIndex(yearStemIndex: number, monthBranchIndex: number): num
   return (tigerStem + monthPosition) % 10;
 }
 
+// Jan 1, 2000 = sexagenary index 54 (Wù Horse, 戊午)
 function getDayPillarIndex(date: Date): number {
   const anchor = new Date(Date.UTC(2000, 0, 1));
   const msPerDay = 86400000;
   const dayDiff = Math.round((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - anchor.getTime()) / msPerDay);
-  let index = (16 + dayDiff) % 60;
+  let index = (54 + dayDiff) % 60;
   if (index < 0) index += 60;
   return index;
 }
@@ -354,7 +527,7 @@ function getElementalBalance(pillars: BaZiPillar[]): BaZiElementalBalance {
 
   function addBranchHiddenStems(branchIndex: number) {
     const hidden = HIDDEN_STEMS[branchIndex];
-    const weights = [3, 2, 1];
+    const weights = HIDDEN_STEM_WEIGHTS;
     hidden.forEach((stemIdx, i) => addStem(stemIdx, weights[i]));
   }
 
@@ -401,11 +574,31 @@ function getTenGods(dayMasterStem: BaZiStem, pillars: BaZiPillar[]): Record<stri
 }
 
 // ------------------------------------------------------------
+// LUNAR ZODIAC ANIMAL
+// ------------------------------------------------------------
+
+function getLunarAnimal(year: number, month: number, day: number): string {
+  let animalYear = year;
+  const lny = LUNAR_NEW_YEAR[year];
+  if (lny) {
+    const [lnyMonth, lnyDay] = lny;
+    if (month < lnyMonth || (month === lnyMonth && day < lnyDay)) {
+      animalYear = year - 1;
+    }
+  }
+  const animalIndex = ((animalYear - 4) % 12 + 12) % 12;
+  return BRANCHES[animalIndex].zodiac;
+}
+
+// ------------------------------------------------------------
 // MAIN EXPORT
 // ------------------------------------------------------------
 
 export function calculateBaziChart(birthDateStr: string, gender: string = 'male'): BaZiChart {
   const date = new Date(birthDateStr + 'T12:00:00Z');
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  const day = date.getUTCDate();
 
   // Year Pillar
   const yearSexagIndex = getYearPillarIndex(date);
@@ -421,21 +614,22 @@ export function calculateBaziChart(birthDateStr: string, gender: string = 'male'
   const daySexagIndex = getDayPillarIndex(date);
   const dayPillar: BaZiPillar = { label: 'day', ...sexagenary(daySexagIndex), naYin: NA_YIN[daySexagIndex] };
 
-  const pillars = [yearPillar, monthPillar, dayPillar];
+  const pillarArray = [yearPillar, monthPillar, dayPillar];
   const dayMaster = dayPillar.stem;
 
-  // Ten Gods
-  const tenGods = getTenGods(dayMaster, pillars);
-
-  // Elemental Balance
-  const elementalBalance = getElementalBalance(pillars);
-
-  // Luck Pillars
+  const tenGods = getTenGods(dayMaster, pillarArray);
+  const elementalBalance = getElementalBalance(pillarArray);
   const luckPillars = getLuckPillars(date, gender, yearPillar.stem.id, monthSexagIndexAccurate);
+  const animal = getLunarAnimal(year, month, day);
+  const branchRelationships = getBranchRelationships(pillarArray);
+  const yinYangBalance = getYinYangBalance(pillarArray);
+  const dayMasterStrength = getDayMasterStrength(dayMaster, pillarArray);
+  const currentLuckPillar = getCurrentLuckPillar(birthDateStr, luckPillars);
 
   return {
     birthDate: birthDateStr,
     gender,
+    animal,
     dayMaster,
     pillars: {
       year: yearPillar,
@@ -445,5 +639,9 @@ export function calculateBaziChart(birthDateStr: string, gender: string = 'male'
     tenGods,
     elementalBalance,
     luckPillars,
+    branchRelationships,
+    dayMasterStrength,
+    yinYangBalance,
+    currentLuckPillar,
   };
 }

@@ -22,8 +22,17 @@ Write six sections using these exact labels, verbatim:
 **Internal Conflict** -- one or two sentences naming the central tension this combination produces. Look for it in elemental imbalances, conflicting ten gods, or the gap between the natal chart and the current luck pillar.
 **Misread As** -- how this person is commonly misperceived, and what is actually true underneath.
 
-On luck pillars
-If the person's current age falls within a luck pillar that introduces a new element or ten god not present in the natal chart, note what is opening up for them in the relevant section. This is what gives the profile a sense of timing -- not just who someone is, but what is becoming available now.
+On luck pillars and timing
+If the person's current luck pillar introduces a new element or ten god not present in the natal chart, note what is opening up for them in the relevant section. This is what gives the profile a sense of timing -- not just who someone is, but what is becoming available now.
+
+On branch relationships
+Clashes indicate tension between life areas (year=ancestry/external world, month=career/social, day=self/spouse). Harmonies indicate natural flow and support between those areas. Three Harmonies triangles point to an elemental strength the chart naturally generates. Penalties point to recurring friction or self-sabotage patterns.
+
+On day master strength
+A strong day master can handle pressure from Officer and Wealth stars. A weak day master with heavy Officer or Wealth is overwhelmed and needs Resource support. This colors how to interpret the ten gods -- the same star reads differently depending on whether the day master can carry it.
+
+On yin/yang balance
+A strongly Yang chart tends toward action, directness, and visibility. A strongly Yin chart tends toward reflection, reception, and subtlety. Note this only if the balance is notably skewed.
 
 Voice and style
 
@@ -97,6 +106,33 @@ function buildUserMessage(data: NarrativeRequest): string {
     const lp = data.bazi.luckPillars;
     const lpSummary = lp.pillars.slice(0, 4).map(p => `Age ${p.age}: ${p.stem.element} ${p.branch.name} (${p.naYin})`).join('; ');
     parts.push(`Luck pillars (${lp.isForward ? 'forward' : 'backward'}): ${lpSummary}`);
+
+    // Branch relationships
+    if (data.bazi.branchRelationships) {
+      const br = data.bazi.branchRelationships;
+      if (br.clashes.length > 0) parts.push(`Branch clashes: ${br.clashes.join('; ')}`);
+      if (br.harmonies.length > 0) parts.push(`Branch harmonies: ${br.harmonies.join('; ')}`);
+      if (br.threeHarmonies.length > 0) parts.push(`Three Harmonies: ${br.threeHarmonies.join('; ')}`);
+      if (br.penalties.length > 0) parts.push(`Branch penalties: ${br.penalties.join('; ')}`);
+    }
+
+    // Day Master strength
+    if (data.bazi.dayMasterStrength) {
+      const dms = data.bazi.dayMasterStrength;
+      parts.push(`Day Master strength: ${dms.assessment} (support ${dms.supportScore}, drain ${dms.drainScore})`);
+    }
+
+    // Yin/Yang balance
+    if (data.bazi.yinYangBalance) {
+      const yy = data.bazi.yinYangBalance;
+      parts.push(`Yin/Yang balance: ${yy.yang} Yang, ${yy.yin} Yin (${yy.ratio})`);
+    }
+
+    // Current Luck Pillar
+    if (data.bazi.currentLuckPillar) {
+      const clp = data.bazi.currentLuckPillar;
+      parts.push(`Current luck pillar (age ${clp.age}, year ${clp.ageInPillar} of 10): ${clp.stem.element} ${clp.branch.name} (${clp.naYin})`);
+    }
   }
 
   return parts.join("\n");

@@ -79,6 +79,16 @@ function buildRequest(result: BirthdateResult): NarrativeRequest {
       month: chart.pillars.month.naYin,
       day: chart.pillars.day.naYin,
     },
+    branchRelationships: chart.branchRelationships,
+    dayMasterStrength: chart.dayMasterStrength,
+    yinYangBalance: chart.yinYangBalance,
+    currentLuckPillar: chart.currentLuckPillar ? {
+      age: chart.currentLuckPillar.pillar.age,
+      stem: { name: chart.currentLuckPillar.pillar.stem.name, element: chart.currentLuckPillar.pillar.stem.element, polarity: chart.currentLuckPillar.pillar.stem.polarity },
+      branch: { name: chart.currentLuckPillar.pillar.branch.name, element: chart.currentLuckPillar.pillar.branch.element },
+      naYin: chart.currentLuckPillar.pillar.naYin,
+      ageInPillar: chart.currentLuckPillar.ageInPillar,
+    } : null,
   };
 
   return req;

@@ -114,6 +114,96 @@ export interface MBTIDimension {
 
 export type MBTIResult = string; // 4-letter string like "INFJ"
 
+// BaZi types
+
+export interface BaZiStem {
+  id: number;
+  name: string;
+  element: string;
+  polarity: string;
+}
+
+export interface BaZiBranch {
+  id: number;
+  name: string;
+  element: string;
+  polarity: string;
+  zodiac: string;
+}
+
+export interface BaZiPillar {
+  label: string;
+  stem: BaZiStem;
+  branch: BaZiBranch;
+  sexagenaryIndex: number;
+  naYin: string;
+}
+
+export interface BaZiElementalBalance {
+  raw: Record<string, number>;
+  percentages: Record<string, number>;
+  dominant: string[];
+  scarce: string[];
+  absent: string[];
+}
+
+export interface BaZiLuckPillar {
+  age: number;
+  stem: BaZiStem;
+  branch: BaZiBranch;
+  sexagenaryIndex: number;
+  naYin: string;
+}
+
+export interface BaZiLuckPillars {
+  startingAge: number;
+  isForward: boolean;
+  pillars: BaZiLuckPillar[];
+}
+
+export interface BaZiBranchRelationships {
+  clashes: string[];
+  harmonies: string[];
+  threeHarmonies: string[];
+  penalties: string[];
+}
+
+export interface BaZiDayMasterStrength {
+  assessment: 'strong' | 'weak' | 'balanced';
+  supportScore: number;
+  drainScore: number;
+}
+
+export interface BaZiYinYangBalance {
+  yin: number;
+  yang: number;
+  ratio: string;
+}
+
+export interface BaZiCurrentLuckPillar {
+  pillar: BaZiLuckPillar;
+  ageInPillar: number;
+}
+
+export interface BaZiChart {
+  birthDate: string;
+  gender: string;
+  animal: string;
+  dayMaster: BaZiStem;
+  pillars: {
+    year: BaZiPillar;
+    month: BaZiPillar;
+    day: BaZiPillar;
+  };
+  tenGods: Record<string, string>;
+  elementalBalance: BaZiElementalBalance;
+  luckPillars: BaZiLuckPillars;
+  branchRelationships: BaZiBranchRelationships;
+  dayMasterStrength: BaZiDayMasterStrength;
+  yinYangBalance: BaZiYinYangBalance;
+  currentLuckPillar: BaZiCurrentLuckPillar | null;
+}
+
 // Narrative types
 
 export interface NarrativeRequest {
@@ -147,5 +237,16 @@ export interface NarrativeRequest {
       }>;
     };
     naYin: { year: string; month: string; day: string };
+    branchRelationships?: BaZiBranchRelationships;
+    dayMasterStrength?: BaZiDayMasterStrength;
+    yinYangBalance?: BaZiYinYangBalance;
+    // Flattened shape for the API payload — pillar fields inlined with narrowed stem/branch
+    currentLuckPillar?: {
+      age: number;
+      stem: { name: string; element: string; polarity: string };
+      branch: { name: string; element: string };
+      naYin: string;
+      ageInPillar: number;
+    } | null;
   };
 }
