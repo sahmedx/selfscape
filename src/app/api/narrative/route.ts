@@ -218,29 +218,40 @@ export async function POST(request: Request) {
     return Response.json({ error: "API key not configured" }, { status: 500 });
   }
 
-  const data: NarrativeRequest = await request.json();
+  let data: NarrativeRequest;
+  try {
+    data = await request.json();
+  } catch (e) {
+    return Response.json({ error: "Invalid request body", details: String(e) }, { status: 400 });
+  }
+
   const client = new Anthropic({ apiKey });
 
-  const stream = await client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: buildUserMessage(data) }],
-  });
+  try {
+    const stream = await client.messages.stream({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: buildUserMessage(data) }],
+    });
 
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      const encoder = new TextEncoder();
-      for await (const event of stream) {
-        if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-          controller.enqueue(encoder.encode(event.delta.text));
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        for await (const event of stream) {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            controller.enqueue(encoder.encode(event.delta.text));
+          }
         }
-      }
-      controller.close();
-    },
-  });
+        controller.close();
+      },
+    });
 
-  return new Response(readableStream, {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
-  });
+    return new Response(readableStream, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  } catch (e) {
+    console.error("Narrative API error:", e);
+    return Response.json({ error: "Failed to generate narrative", details: String(e) }, { status: 500 });
+  }
 }
