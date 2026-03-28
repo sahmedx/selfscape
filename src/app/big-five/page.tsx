@@ -38,6 +38,12 @@ export default function BigFivePage() {
             cards={BIG_FIVE_CARDS}
             onComplete={handleComplete}
           />
+          <button
+            onClick={() => router.push("/")}
+            className="mt-6 cursor-pointer text-sm text-foreground/40 transition-colors hover:text-foreground/70"
+          >
+            I&apos;ll discover this later
+          </button>
         </>
       )}
     </main>

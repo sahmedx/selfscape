@@ -41,7 +41,7 @@ export default function SwipeDemoPage() {
   const [results, setResults] = useState<SwipeResponse[] | null>(null);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <main className="min-h-svh flex flex-col items-center justify-center px-4 py-12">
       <h1 className="text-2xl font-serif text-gold mb-2">Swipe Demo</h1>
       <p className="text-foreground/40 text-sm mb-8 text-center">
         Drag cards left or right · Arrow keys · Tap buttons
@@ -67,7 +67,7 @@ export default function SwipeDemoPage() {
       ) : (
         <SwipeDeck
           cards={SAMPLE_CARDS}
-          onComplete={(responses) => setResults(responses)}
+          onComplete={setResults}
         />
       )}
     </main>

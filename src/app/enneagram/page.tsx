@@ -101,6 +101,15 @@ export default function EnneagramPage() {
           onBack={() => router.push("/")}
         />
       )}
+
+      {phase !== "results" && (
+        <button
+          onClick={() => router.push("/")}
+          className="mt-8 cursor-pointer text-sm text-foreground/40 transition-colors hover:text-foreground/70"
+        >
+          I&apos;ll discover this later
+        </button>
+      )}
     </main>
   );
 }

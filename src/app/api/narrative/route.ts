@@ -221,9 +221,19 @@ function buildUserMessage(data: NarrativeRequest): string {
   return parts.join("\n");
 }
 
-export async function POST(request: Request) {
+let _client: Anthropic | null = null;
+
+function getClient(): Anthropic | null {
+  if (_client) return _client;
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!apiKey) return null;
+  _client = new Anthropic({ apiKey });
+  return _client;
+}
+
+export async function POST(request: Request) {
+  const client = getClient();
+  if (!client) {
     return Response.json({ error: "API key not configured" }, { status: 500 });
   }
 
@@ -234,11 +244,9 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid request body", details: String(e) }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey });
-
   try {
     const stream = await client.messages.stream({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: buildUserMessage(data) }],

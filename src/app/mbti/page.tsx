@@ -11,7 +11,6 @@ export default function MBTIPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<"input" | "results">("input");
   const [selections, setSelections] = useState<Record<string, string>>({});
-  const [resultType, setResultType] = useState("");
 
   const allSelected = MBTI_DIMENSIONS.every((dim) => selections[dim.key]);
 
@@ -19,25 +18,24 @@ export default function MBTIPage() {
     setSelections((prev) => ({ ...prev, [dimKey]: letter }));
   }
 
+  const resultType = selections.EI + selections.SN + selections.TF + selections.JP;
+
   function handleContinue() {
     if (!allSelected) return;
-    const type =
-      selections.EI + selections.SN + selections.TF + selections.JP;
-    saveToSession(SESSION_KEYS.mbtiResult, type);
-    setResultType(type);
+    saveToSession(SESSION_KEYS.mbtiResult, resultType);
     setPhase("results");
   }
 
   if (phase === "results") {
     return (
-      <div className="flex min-h-svh items-center justify-center px-4">
+      <main className="flex min-h-svh items-center justify-center px-4">
         <MBTIResults type={resultType} onBack={() => router.push("/")} />
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center px-4">
+    <main className="flex min-h-svh items-center justify-center px-4">
       <div className="flex flex-col items-center gap-10">
         <div className="text-center">
           <h1 className="text-2xl font-serif text-gold">Know Your Type?</h1>
@@ -104,6 +102,6 @@ export default function MBTIPage() {
           </button>
         </motion.div>
       </div>
-    </div>
+    </main>
   );
 }
