@@ -269,11 +269,11 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
         <div className="flex flex-col gap-4">
           <div className="animate-fade-up rounded-xl border border-gold/20 p-6 text-left">
             {narrative.split("\n").map((line, i) => {
-              const h2Match = line.match(/^##\s+(.*)/);
-              if (h2Match) {
+              const headerMatch = line.match(/^#{1,4}\s+(.*)/);
+              if (headerMatch) {
                 return (
                   <p key={i} className="mt-6 mb-3 text-sm uppercase tracking-widest text-gold/60 first:mt-0">
-                    {h2Match[1]}
+                    {headerMatch[1]}
                   </p>
                 );
               }
