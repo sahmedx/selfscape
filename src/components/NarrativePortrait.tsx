@@ -253,7 +253,7 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
       {state === "idle" && (
         <button
           onClick={generate}
-          className="cursor-pointer text-sm font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
+          className="cursor-pointer text-lg font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
         >
           Generate My Portrait
         </button>

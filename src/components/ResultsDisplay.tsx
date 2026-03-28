@@ -66,6 +66,11 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
 
   return (
     <div className="flex flex-col items-center gap-12 px-6">
+      {/* Page Header */}
+      <h1 className="animate-fade-up text-center font-serif text-2xl tracking-wide text-gold sm:text-3xl">
+        Your Personal SelfScape
+      </h1>
+
       {/* Western Zodiac */}
       <div className="animate-fade-up text-center">
         <p className="mb-1 text-sm uppercase tracking-widest text-gold/60">
@@ -75,7 +80,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           {western.sign}
         </h2>
         {SIGN_DESCRIPTIONS[western.sign] && (
-          <p className="mt-2 text-sm italic text-foreground/40">
+          <p className="mt-2 text-base italic text-foreground/40">
             {western.element} &middot; {SIGN_DESCRIPTIONS[western.sign]}
           </p>
         )}
@@ -93,7 +98,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           {chinese.year.stemElement} {chinese.year.branch}
         </h2>
         {STEM_DESCRIPTORS[chinese.year.stem] && (
-          <p className="mt-2 text-sm italic text-foreground/40">
+          <p className="mt-2 text-base italic text-foreground/40">
             {STEM_DESCRIPTORS[chinese.year.stem]} &middot; {chinese.year.stemPolarity}
           </p>
         )}
@@ -111,7 +116,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           {chinese.month.stemElement} {chinese.month.branch}
         </h2>
         {STEM_DESCRIPTORS[chinese.month.stem] && (
-          <p className="mt-2 text-sm italic text-foreground/40">
+          <p className="mt-2 text-base italic text-foreground/40">
             {STEM_DESCRIPTORS[chinese.month.stem]} &middot; {chinese.month.stemPolarity}
           </p>
         )}
@@ -129,7 +134,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
           {chinese.day.stemElement} {chinese.day.branch}
         </h2>
         {STEM_DESCRIPTORS[chinese.day.stem] && (
-          <p className="mt-2 text-sm italic text-foreground/40">
+          <p className="mt-2 text-base italic text-foreground/40">
             {STEM_DESCRIPTORS[chinese.day.stem]} &middot; {chinese.day.stemPolarity}
           </p>
         )}
