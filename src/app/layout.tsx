@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     siteName: "Selfscape",
     images: [
       {
-        url: "https://selfscape-sepia.vercel.app/preview.png",
+        url: "https://selfscape-sepia.vercel.app/preview2.jpeg",
         width: 1200,
         height: 630,
       },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Selfscape",
     description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
-    images: ["https://selfscape-sepia.vercel.app/preview.png"],
+    images: ["https://selfscape-sepia.vercel.app/preview2.jpeg"],
   },
 };
 
