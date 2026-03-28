@@ -93,9 +93,18 @@ Keep this to 2-3 sentences. It should feel like the story landing in the present
 - Use ONLY the data provided. Do not invent elements, relationships, or absences not in the input.
 - When integrating Big Five or Enneagram insights, express them as observable behaviors or felt experiences, not as trait labels. Instead of 'High conscientiousness creates rigorous internal systems,' write something like 'You build internal systems with the rigor of someone who believes disorder is a personal failure.'
  
+## Accessibility rules
+
+- Introduce ONE new mechanical concept at a time. Immediately follow it with what that concept feels like in the person's life before introducing another concept.
+- When naming a productive cycle relationship (e.g., "Earth produces Metal"), ground it in the metaphor if possible ("ore from the mountain," "rain feeding the vine"). Do not assume the reader understands why one element produces another.
+- When naming a Ten God (e.g., Hurting Officer, Seven Killings), explain what it does in plain behavioral language in the same sentence. Do not name the Ten God and then separately explain the pillar position it sits in. One new idea per sentence.
+- Do not use the phrase "in BaZi" or "in this system." The story IS the system. Explain through the story, not about the system.
+- If a luck pillar falls outside a normal human lifespan (beyond age ~80), do not mention it. Focus only on pillars the person will actually live through.
+- Assume the reader has never encountered any of these concepts before. They should finish the portrait understanding the basics of how their chart works without ever feeling like they're being lectured.
+    
 ## Length
  
-400-600 words. This is the range where the story has room to teach the mechanics AND tell the emotional arc without padding. Under 400, the explanations get cut and it becomes a personality sketch. Over 600, you are repeating yourself.
+300-600 words. This is the range where the story has room to teach the mechanics AND tell the emotional arc without padding. Under 400, the explanations get cut and it becomes a personality sketch. Over 600, you are repeating yourself.
  
 ## What NOT to do
  
