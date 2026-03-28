@@ -102,22 +102,34 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
             </p>
           )}
           <div className="flex gap-4 w-full">
-            <div className="flex-1 text-center">
-              <p className="text-foreground/40 text-sm uppercase tracking-wider mb-2">
-                ← Swipe left
-              </p>
+            <div className="flex-1 flex flex-col items-center text-center gap-3">
               <p className="text-foreground font-serif text-xl leading-relaxed">
                 {card.leftLabel}
               </p>
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full border border-gold/30 text-gold/60 hover:text-gold hover:border-gold active:bg-gold/10 transition-colors flex items-center justify-center"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); animateOff("left"); }}
+                aria-label="Choose left option"
+              >
+                ←
+              </button>
             </div>
             <div className="w-px bg-gold/20" />
-            <div className="flex-1 text-center">
-              <p className="text-foreground/40 text-sm uppercase tracking-wider mb-2">
-                Swipe right →
-              </p>
+            <div className="flex-1 flex flex-col items-center text-center gap-3">
               <p className="text-foreground font-serif text-xl leading-relaxed">
                 {card.rightLabel}
               </p>
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full border border-gold/30 text-gold/60 hover:text-gold hover:border-gold active:bg-gold/10 transition-colors flex items-center justify-center"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); animateOff("right"); }}
+                aria-label="Choose right option"
+              >
+                →
+              </button>
             </div>
           </div>
         </div>

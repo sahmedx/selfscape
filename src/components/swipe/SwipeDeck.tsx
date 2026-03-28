@@ -112,34 +112,16 @@ export default function SwipeDeck({ cards, onSwipe, onComplete }: SwipeDeckProps
         )}
       </div>
 
-      {/* Tap fallback buttons */}
-      {!isDone && (
-        <div className="flex gap-8 items-center">
+      {/* Undo button */}
+      {!isDone && currentIndex > 0 && (
+        <div className="flex justify-center">
           <button
-            onClick={() => triggerSwipe("left")}
+            onClick={handleUndo}
             disabled={isAnimating}
-            className="w-12 h-12 rounded-full border border-gold/30 text-gold/60 hover:text-gold hover:border-gold transition-colors flex items-center justify-center disabled:opacity-30"
-            aria-label="Swipe left"
+            className="w-12 h-12 rounded-full border border-foreground/20 text-foreground/40 hover:text-foreground/60 hover:border-foreground/40 transition-colors flex items-center justify-center disabled:opacity-30"
+            aria-label="Undo last swipe"
           >
-            ←
-          </button>
-          {currentIndex > 0 && (
-            <button
-              onClick={handleUndo}
-              disabled={isAnimating}
-              className="w-12 h-12 rounded-full border border-foreground/20 text-foreground/40 hover:text-foreground/60 hover:border-foreground/40 transition-colors flex items-center justify-center disabled:opacity-30"
-              aria-label="Undo last swipe"
-            >
-              ↩
-            </button>
-          )}
-          <button
-            onClick={() => triggerSwipe("right")}
-            disabled={isAnimating}
-            className="w-12 h-12 rounded-full border border-gold/30 text-gold/60 hover:text-gold hover:border-gold transition-colors flex items-center justify-center disabled:opacity-30"
-            aria-label="Swipe right"
-          >
-            →
+            ↩
           </button>
         </div>
       )}

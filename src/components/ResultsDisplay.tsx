@@ -176,7 +176,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
         ) : (
           <Link
             href="/big-five"
-            className="inline-block px-6 py-3 text-sm font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
+            className="inline-block px-6 py-3 text-lg font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
           >
             Discover Your Nature
           </Link>
@@ -231,7 +231,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
         ) : (
           <Link
             href="/enneagram"
-            className="inline-block px-6 py-3 text-sm font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
+            className="inline-block px-6 py-3 text-lg font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
           >
             Discover Your Inner World
           </Link>
@@ -268,7 +268,7 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
         ) : (
           <Link
             href="/mbti"
-            className="inline-block px-6 py-3 text-sm font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
+            className="inline-block px-6 py-3 text-lg font-serif tracking-wide text-gold/70 transition-colors hover:text-gold"
           >
             Enter Your Type
           </Link>
