@@ -125,6 +125,15 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
         Change Birthdate
       </button>
 
+      {/* Share Portrait */}
+      <Link
+        href="/portrait"
+        className="animate-fade-up rounded-xl border border-gold/20 px-8 py-3 text-center text-sm uppercase tracking-widest text-gold transition-colors hover:border-gold/40 hover:text-gold/80"
+        style={{ animationDelay: "1.05s" }}
+      >
+        Share Your Portrait
+      </Link>
+
       {/* Big Five World Card */}
       <div
         className={`animate-fade-up w-full max-w-xs rounded-xl border p-5 text-center ${
