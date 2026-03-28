@@ -6,6 +6,7 @@ import { BirthdateResult, BigFiveScores, EnneagramResult } from "@/lib/types";
 import { loadFromSession, removeFromSession, SESSION_KEYS } from "@/lib/session";
 import { getBigFiveProfile } from "@/lib/big-five-scoring";
 import { MBTI_TYPE_DESCRIPTIONS } from "@/data/mbti-data";
+import { STEM_DESCRIPTORS, SIGN_DESCRIPTIONS } from "@/data/display-lookups";
 import { getChineseZodiac } from "@/lib/chinese-zodiac";
 import NarrativePortrait from "./NarrativePortrait";
 
@@ -13,34 +14,6 @@ interface ResultsDisplayProps {
   result: BirthdateResult;
   onReset: () => void;
 }
-
-const STEM_DESCRIPTORS: Record<string, string> = {
-  "Jiǎ": "The Forest",
-  "Yǐ": "The Garden",
-  "Bǐng": "The Sun",
-  "Dīng": "The Candle",
-  "Wù": "The Mountain",
-  "Jǐ": "The Meadow",
-  "Gēng": "The Sword",
-  "Xīn": "The Jewel",
-  "Rén": "The Ocean",
-  "Guǐ": "The Rain",
-};
-
-const SIGN_DESCRIPTIONS: Record<string, string> = {
-  Aries: "Driven through courage and instinct",
-  Taurus: "Grounded through patience and loyalty",
-  Gemini: "Adaptable through communication and curiosity",
-  Cancer: "Driven through nurturing and feeling",
-  Leo: "Grounded through creativity and pride",
-  Virgo: "Adaptable through analysis and refinement",
-  Libra: "Driven through connection and balance",
-  Scorpio: "Grounded through intensity and will",
-  Sagittarius: "Adaptable through philosophy and exploration",
-  Capricorn: "Driven through ambition and structure",
-  Aquarius: "Grounded through vision and principle",
-  Pisces: "Adaptable through intuition and fluidity",
-};
 
 export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps) {
   const { western, dayMaster } = result;
@@ -287,6 +260,15 @@ export default function ResultsDisplay({ result, onReset }: ResultsDisplayProps)
       >
         <NarrativePortrait result={result} />
       </div>
+
+      {/* Share Portrait */}
+      <Link
+        href="/portrait"
+        className="animate-fade-up rounded-xl border border-gold/20 px-8 py-3 text-center text-sm uppercase tracking-widest text-gold transition-colors hover:border-gold/40 hover:text-gold/80"
+        style={{ animationDelay: "2.25s" }}
+      >
+        Share Your Portrait
+      </Link>
 
       {/* Start Over */}
       <button

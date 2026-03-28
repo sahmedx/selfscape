@@ -1,0 +1,98 @@
+<h2>Portrait Card Layout</h2>
+<p class="subtitle">How should the type labels be arranged? Click the layout you prefer.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px;">
+      <!-- Mockup A: Centered stack -->
+      <div style="background: #0a0a14; border-radius: 16px; padding: 40px 24px; color: #e8e4dc; font-family: Georgia, serif; text-align: center; min-height: 500px; display: flex; flex-direction: column; justify-content: center; gap: 28px; border: 1px solid rgba(196,163,90,0.2);">
+        <div style="font-size: 11px; letter-spacing: 4px; color: rgba(196,163,90,0.5); text-transform: uppercase;">Selfscape</div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">Sun Sign</div>
+            <div style="font-size: 22px; font-weight: 300; color: #e8e4dc;">Virgo</div>
+            <div style="font-size: 12px; color: rgba(232,228,220,0.4);">Earth · Mutable</div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">Chinese Zodiac</div>
+            <div style="font-size: 22px; font-weight: 300; color: #e8e4dc;">Wood Tiger</div>
+            <div style="font-size: 12px; color: rgba(232,228,220,0.4);">The Forest · Yang</div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">Day Master</div>
+            <div style="font-size: 22px; font-weight: 300; color: #e8e4dc;">Yin Fire</div>
+            <div style="font-size: 12px; color: rgba(232,228,220,0.4);">The Candle</div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">Enneagram</div>
+            <div style="font-size: 22px; font-weight: 300; color: #e8e4dc;">Type 5</div>
+            <div style="font-size: 12px; color: rgba(232,228,220,0.4);">The Investigator</div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">MBTI</div>
+            <div style="font-size: 22px; font-weight: 300; color: #e8e4dc;">INFJ</div>
+          </div>
+
+          <div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.6); text-transform: uppercase; margin-bottom: 6px;">Big Five</div>
+            <div style="font-size: 14px; font-weight: 300; color: #e8e4dc; line-height: 1.8;">
+              Boundlessly curious · Powered by solitude<br>Steady center · Warm pragmatist · Calmly anchored
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.4); text-transform: uppercase;">Discover yours · selfscape.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A: Vertical Stack</h3>
+      <p>Each framework gets its own labeled section, stacked vertically. Clean, scannable, easy to read in a screenshot.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px;">
+      <!-- Mockup B: Compact typographic -->
+      <div style="background: #0a0a14; border-radius: 16px; padding: 40px 24px; color: #e8e4dc; font-family: Georgia, serif; text-align: center; min-height: 500px; display: flex; flex-direction: column; justify-content: center; gap: 32px; border: 1px solid rgba(196,163,90,0.2);">
+        <div style="font-size: 11px; letter-spacing: 4px; color: rgba(196,163,90,0.5); text-transform: uppercase;">Selfscape</div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 28px; font-weight: 300; color: #e8e4dc; line-height: 1.4;">
+            Virgo Sun
+          </div>
+          <div style="font-size: 28px; font-weight: 300; color: #e8e4dc; line-height: 1.4;">
+            Wood Tiger
+          </div>
+          <div style="font-size: 28px; font-weight: 300; color: #e8e4dc; line-height: 1.4;">
+            Yin Fire
+          </div>
+          <div style="font-size: 20px; font-weight: 300; color: rgba(196,163,90,0.8); line-height: 1.6; margin-top: 8px;">
+            Type 5 · INFJ
+          </div>
+        </div>
+
+        <div style="width: 40px; height: 1px; background: rgba(196,163,90,0.3); margin: 0 auto;"></div>
+
+        <div style="font-size: 13px; font-weight: 300; color: rgba(232,228,220,0.5); line-height: 1.8; letter-spacing: 0.5px;">
+          Boundlessly curious · Powered by solitude<br>
+          Steady center · Warm pragmatist · Calmly anchored
+        </div>
+
+        <div style="margin-top: 12px;">
+          <div style="font-size: 10px; letter-spacing: 3px; color: rgba(196,163,90,0.4); text-transform: uppercase;">Discover yours · selfscape.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B: Typographic Poster</h3>
+      <p>Bold type names as the hero, minimal labels. More dramatic, feels like an identity statement. Big Five traits as a quiet footer.</p>
+    </div>
+  </div>
+</div>
