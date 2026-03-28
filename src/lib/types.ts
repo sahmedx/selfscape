@@ -215,17 +215,35 @@ export interface NarrativeRequest {
     dayPillar: ChinesePillar;
   };
   dayMaster: { element: string; polarity: string };
-  bigFive?: { o: number; c: number; e: number; a: number; n: number };
-  enneagram?: { primaryType: number; primaryName: string; coreFear: string; coreDesire: string; growthDirection: string; suggestion?: number };
-  mbti?: string;
+  bigFive?: {
+    scores: { o: number; c: number; e: number; a: number; n: number };
+    dimensions: Array<{ key: string; name: string; score: number; level: string; label: string }>;
+    summary: string;
+  };
+  enneagram?: {
+    primaryType: number;
+    primaryName: string;
+    label: string;
+    center: string;
+    centerDescription: string;
+    coreFear: string;
+    coreDesire: string;
+    growthDirection: string;
+    coreTension: string;
+    suggestion?: number;
+  };
+  mbti?: { code: string; description: string };
   bazi?: {
+    dayMasterDescription: string;
     tenGods: Record<string, string>;
+    tenGodsSummary: string;
     elementalBalance: {
       percentages: Record<string, number>;
       dominant: string[];
       scarce: string[];
       absent: string[];
     };
+    elementStory: string;
     luckPillars: {
       startingAge: number;
       isForward: boolean;
@@ -234,14 +252,17 @@ export interface NarrativeRequest {
         stem: { name: string; element: string; polarity: string };
         branch: { name: string; element: string };
         naYin: string;
+        stemTenGod: string;
+        isCurrent: boolean;
       }>;
     };
+    luckPillarNarrative: string;
     naYin: { year: string; month: string; day: string };
-    branchRelationships?: BaZiBranchRelationships;
-    dayMasterStrength?: BaZiDayMasterStrength;
-    yinYangBalance?: BaZiYinYangBalance;
-    // Flattened shape for the API payload — pillar fields inlined with narrowed stem/branch
-    currentLuckPillar?: {
+    branchRelationships: BaZiBranchRelationships;
+    branchRelationshipSummary: string;
+    dayMasterStrength: BaZiDayMasterStrength;
+    yinYangBalance: BaZiYinYangBalance;
+    currentLuckPillar: {
       age: number;
       stem: { name: string; element: string; polarity: string };
       branch: { name: string; element: string };
@@ -249,4 +270,5 @@ export interface NarrativeRequest {
       ageInPillar: number;
     } | null;
   };
+  narrativeSummary: string;
 }

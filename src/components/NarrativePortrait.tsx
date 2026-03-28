@@ -13,7 +13,19 @@ import {
   removeFromSession,
   SESSION_KEYS,
 } from "@/lib/session";
-import { calculateBaziChart } from "@/lib/bazi-calculator";
+import { calculateBaziChart, getTenGod } from "@/lib/bazi-calculator";
+import { getBigFiveProfile } from "@/lib/big-five-scoring";
+import { ENNEAGRAM_CENTERS, ENNEAGRAM_TYPES } from "@/data/enneagram-data";
+import { MBTI_TYPE_DESCRIPTIONS } from "@/data/mbti-data";
+import { DAY_MASTER_DESCRIPTIONS, ENNEAGRAM_TENSIONS } from "@/data/narrative-lookups";
+import {
+  generateTenGodsSummary,
+  generateElementStory,
+  generateLuckPillarNarrative,
+  generateBranchRelationshipSummary,
+  generateBigFiveSummary,
+  generateNarrativeSummary,
+} from "@/lib/narrative-summaries";
 
 type NarrativeState = "idle" | "loading" | "streaming" | "complete" | "error";
 
@@ -22,11 +34,112 @@ interface NarrativePortraitProps {
 }
 
 function buildRequest(result: BirthdateResult): NarrativeRequest {
-  const bigFive = loadFromSession<BigFiveScores>(SESSION_KEYS.bigFiveScores);
+  const bigFiveScores = loadFromSession<BigFiveScores>(SESSION_KEYS.bigFiveScores);
   const enneagram = loadFromSession<EnneagramResult>(SESSION_KEYS.enneagramResult);
-  const mbti = loadFromSession<string>(SESSION_KEYS.mbtiResult);
+  const mbtiCode = loadFromSession<string>(SESSION_KEYS.mbtiResult);
 
-  const req: NarrativeRequest = {
+  // Calculate full BaZi chart
+  const dateStr = `${result.year}-${String(result.month).padStart(2, '0')}-${String(result.day).padStart(2, '0')}`;
+  const chart = calculateBaziChart(dateStr);
+
+  // Day Master description
+  const dayMasterDescription = DAY_MASTER_DESCRIPTIONS[chart.dayMaster.name] || "";
+
+  // Ten Gods summary
+  const tenGodsSummary = generateTenGodsSummary(chart.tenGods);
+
+  // Element story
+  const elementStory = generateElementStory(chart.dayMaster.element, {
+    percentages: chart.elementalBalance.percentages,
+    dominant: chart.elementalBalance.dominant,
+    scarce: chart.elementalBalance.scarce,
+    absent: chart.elementalBalance.absent,
+  });
+
+  // Luck pillar narrative
+  const luckPillarNarrative = generateLuckPillarNarrative(
+    chart.luckPillars.pillars,
+    chart.currentLuckPillar,
+    chart.dayMaster,
+  );
+
+  // Branch relationship summary
+  const branchRelationshipSummary = generateBranchRelationshipSummary(chart.branchRelationships);
+
+  // Luck pillars with Ten Gods and current flag
+  const currentAge = chart.currentLuckPillar?.pillar.age;
+  const luckPillarsWithGods = chart.luckPillars.pillars.map(p => ({
+    age: p.age,
+    stem: { name: p.stem.name, element: p.stem.element, polarity: p.stem.polarity },
+    branch: { name: p.branch.name, element: p.branch.element },
+    naYin: p.naYin,
+    stemTenGod: getTenGod(chart.dayMaster, p.stem),
+    isCurrent: p.age === currentAge,
+  }));
+
+  // Build Big Five expanded data
+  let bigFiveData: NarrativeRequest["bigFive"];
+  let bigFiveSummary = "";
+  if (bigFiveScores) {
+    const dimensions = getBigFiveProfile(bigFiveScores);
+    bigFiveSummary = generateBigFiveSummary(dimensions);
+    bigFiveData = {
+      scores: bigFiveScores,
+      dimensions: dimensions.map(d => ({
+        key: d.key,
+        name: d.name,
+        score: d.score,
+        level: d.level,
+        label: d.label,
+      })),
+      summary: bigFiveSummary,
+    };
+  }
+
+  // Build Enneagram expanded data
+  let enneagramData: NarrativeRequest["enneagram"];
+  let enneagramTension = "";
+  if (enneagram) {
+    const typeData = ENNEAGRAM_TYPES.find(t => t.number === enneagram.primaryType.number);
+    const center = ENNEAGRAM_CENTERS.find(c => c.id === enneagram.primaryType.centerId);
+    enneagramTension = ENNEAGRAM_TENSIONS[enneagram.primaryType.number] || "";
+    enneagramData = {
+      primaryType: enneagram.primaryType.number,
+      primaryName: enneagram.primaryType.name,
+      label: typeData?.label || "",
+      center: center?.name || "",
+      centerDescription: center?.description || "",
+      coreFear: enneagram.primaryType.coreFear,
+      coreDesire: enneagram.primaryType.coreDesire,
+      growthDirection: enneagram.primaryType.growthDirection,
+      coreTension: enneagramTension,
+      suggestion: enneagram.suggestion?.number,
+    };
+  }
+
+  // Build MBTI expanded data
+  let mbtiData: NarrativeRequest["mbti"];
+  let mbtiDescription = "";
+  if (mbtiCode) {
+    mbtiDescription = MBTI_TYPE_DESCRIPTIONS[mbtiCode] || "";
+    mbtiData = { code: mbtiCode, description: mbtiDescription };
+  }
+
+  // Master narrative summary
+  const narrativeSummary = generateNarrativeSummary({
+    dayMasterDescription,
+    elementStory,
+    tenGodsSummary,
+    luckPillarNarrative,
+    branchRelationshipSummary,
+    bigFiveSummary,
+    enneagramTension,
+    mbtiDescription,
+    westernZodiac: result.western,
+    dayMasterStrength: chart.dayMasterStrength,
+  });
+
+  return {
     westernZodiac: result.western,
     chineseZodiac: {
       animal: result.chinese.animal,
@@ -38,115 +151,47 @@ function buildRequest(result: BirthdateResult): NarrativeRequest {
       element: result.dayMaster.element,
       polarity: result.dayMaster.polarity,
     },
+    bigFive: bigFiveData,
+    enneagram: enneagramData,
+    mbti: mbtiData,
+    bazi: {
+      dayMasterDescription,
+      tenGods: chart.tenGods,
+      tenGodsSummary,
+      elementalBalance: {
+        percentages: chart.elementalBalance.percentages,
+        dominant: chart.elementalBalance.dominant,
+        scarce: chart.elementalBalance.scarce,
+        absent: chart.elementalBalance.absent,
+      },
+      elementStory,
+      luckPillars: {
+        startingAge: chart.luckPillars.startingAge,
+        isForward: chart.luckPillars.isForward,
+        pillars: luckPillarsWithGods,
+      },
+      luckPillarNarrative,
+      naYin: {
+        year: chart.pillars.year.naYin,
+        month: chart.pillars.month.naYin,
+        day: chart.pillars.day.naYin,
+      },
+      branchRelationships: chart.branchRelationships,
+      branchRelationshipSummary,
+      dayMasterStrength: chart.dayMasterStrength,
+      yinYangBalance: chart.yinYangBalance,
+      currentLuckPillar: chart.currentLuckPillar ? {
+        age: chart.currentLuckPillar.pillar.age,
+        stem: { name: chart.currentLuckPillar.pillar.stem.name, element: chart.currentLuckPillar.pillar.stem.element, polarity: chart.currentLuckPillar.pillar.stem.polarity },
+        branch: { name: chart.currentLuckPillar.pillar.branch.name, element: chart.currentLuckPillar.pillar.branch.element },
+        naYin: chart.currentLuckPillar.pillar.naYin,
+        ageInPillar: chart.currentLuckPillar.ageInPillar,
+      } : null,
+    },
+    narrativeSummary,
   };
-
-  if (bigFive) req.bigFive = bigFive;
-  if (enneagram) {
-    req.enneagram = {
-      primaryType: enneagram.primaryType.number,
-      primaryName: enneagram.primaryType.name,
-      coreFear: enneagram.primaryType.coreFear,
-      coreDesire: enneagram.primaryType.coreDesire,
-      growthDirection: enneagram.primaryType.growthDirection,
-      suggestion: enneagram.suggestion?.number,
-    };
-  }
-  if (mbti) req.mbti = mbti;
-
-  // Calculate full BaZi chart
-  const dateStr = `${result.year}-${String(result.month).padStart(2, '0')}-${String(result.day).padStart(2, '0')}`;
-  const chart = calculateBaziChart(dateStr);
-  req.bazi = {
-    tenGods: chart.tenGods,
-    elementalBalance: {
-      percentages: chart.elementalBalance.percentages,
-      dominant: chart.elementalBalance.dominant,
-      scarce: chart.elementalBalance.scarce,
-      absent: chart.elementalBalance.absent,
-    },
-    luckPillars: {
-      startingAge: chart.luckPillars.startingAge,
-      isForward: chart.luckPillars.isForward,
-      pillars: chart.luckPillars.pillars.map(p => ({
-        age: p.age,
-        stem: { name: p.stem.name, element: p.stem.element, polarity: p.stem.polarity },
-        branch: { name: p.branch.name, element: p.branch.element },
-        naYin: p.naYin,
-      })),
-    },
-    naYin: {
-      year: chart.pillars.year.naYin,
-      month: chart.pillars.month.naYin,
-      day: chart.pillars.day.naYin,
-    },
-    branchRelationships: chart.branchRelationships,
-    dayMasterStrength: chart.dayMasterStrength,
-    yinYangBalance: chart.yinYangBalance,
-    currentLuckPillar: chart.currentLuckPillar ? {
-      age: chart.currentLuckPillar.pillar.age,
-      stem: { name: chart.currentLuckPillar.pillar.stem.name, element: chart.currentLuckPillar.pillar.stem.element, polarity: chart.currentLuckPillar.pillar.stem.polarity },
-      branch: { name: chart.currentLuckPillar.pillar.branch.name, element: chart.currentLuckPillar.pillar.branch.element },
-      naYin: chart.currentLuckPillar.pillar.naYin,
-      ageInPillar: chart.currentLuckPillar.ageInPillar,
-    } : null,
-  };
-
-  return req;
 }
 
-const SECTION_LABELS = ["Your Portrait", "What Drives You", "How You Think", "Relationship Style", "Internal Conflict", "Misread As"];
-
-interface NarrativeSection {
-  label: string;
-  text: string;
-}
-
-function parseNarrative(raw: string): NarrativeSection[] {
-  const sections: NarrativeSection[] = [];
-  let remaining = raw;
-
-  // Skip any text before the first section marker
-  const firstMarkerIndex = SECTION_LABELS.reduce((min, label) => {
-    const pattern = new RegExp(`\\*\\*${label}\\*\\*`);
-    const match = remaining.match(pattern);
-    if (match && match.index !== undefined && match.index < min) return match.index;
-    return min;
-  }, remaining.length);
-  remaining = remaining.slice(firstMarkerIndex);
-
-  // Extract each labeled section
-  for (let i = 0; i < SECTION_LABELS.length; i++) {
-    const label = SECTION_LABELS[i];
-    const pattern = new RegExp(`\\*\\*${label}\\*\\*`);
-    const match = remaining.match(pattern);
-    if (!match || match.index === undefined) continue;
-
-    const contentStart = match.index + match[0].length;
-    // Find the next section marker
-    let nextMarkerIndex = remaining.length;
-    for (let j = i + 1; j < SECTION_LABELS.length; j++) {
-      const nextPattern = new RegExp(`\\*\\*${SECTION_LABELS[j]}\\*\\*`);
-      const nextMatch = remaining.match(nextPattern);
-      if (nextMatch && nextMatch.index !== undefined) {
-        nextMarkerIndex = nextMatch.index;
-        break;
-      }
-    }
-
-    const text = remaining.slice(contentStart, nextMarkerIndex).trim();
-    if (text) {
-      sections.push({ label, text });
-    }
-    remaining = remaining.slice(nextMarkerIndex);
-  }
-
-  // If no sections were parsed (e.g. during early streaming), show as single block
-  if (sections.length === 0 && raw.trim()) {
-    sections.push({ label: "Your Portrait", text: raw.trim() });
-  }
-
-  return sections;
-}
 
 export default function NarrativePortrait({ result }: NarrativePortraitProps) {
   const [state, setState] = useState<NarrativeState>("idle");
@@ -203,8 +248,6 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
     }
   }, [result]);
 
-  const sections = parseNarrative(narrative);
-
   return (
     <div className="w-full max-w-xs text-center">
       {state === "idle" && (
@@ -224,20 +267,25 @@ export default function NarrativePortrait({ result }: NarrativePortraitProps) {
 
       {(state === "streaming" || state === "complete") && (
         <div className="flex flex-col gap-4">
-          {sections.map((section, i) => (
-            <div
-              key={section.label}
-              className="animate-fade-up rounded-xl border border-gold/20 p-5"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            >
-              <p className="mb-3 text-sm uppercase tracking-widest text-gold/60">
-                {section.label}
-              </p>
-              <p className="text-sm leading-relaxed text-foreground/70">
-                {section.text}
-              </p>
-            </div>
-          ))}
+          <div className="animate-fade-up rounded-xl border border-gold/20 p-6 text-left">
+            {narrative.split("\n").map((line, i) => {
+              const h2Match = line.match(/^##\s+(.*)/);
+              if (h2Match) {
+                return (
+                  <p key={i} className="mt-6 mb-3 text-sm uppercase tracking-widest text-gold/60 first:mt-0">
+                    {h2Match[1]}
+                  </p>
+                );
+              }
+              const trimmed = line.trim();
+              if (!trimmed) return null;
+              return (
+                <p key={i} className="text-sm leading-relaxed text-foreground/70 mb-2">
+                  {trimmed}
+                </p>
+              );
+            })}
+          </div>
           {state === "complete" && (
             <button
               onClick={generate}

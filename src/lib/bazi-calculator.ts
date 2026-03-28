@@ -135,7 +135,7 @@ const CONTROLLED_BY: Record<string, string> = { Earth: 'Wood', Metal: 'Fire', Wa
 // TEN GODS
 // ------------------------------------------------------------
 
-function getTenGod(dayMaster: BaZiStem, target: BaZiStem): string {
+export function getTenGod(dayMaster: BaZiStem, target: BaZiStem): string {
   const sameElement = dayMaster.element === target.element;
   const samePolarity = dayMaster.polarity === target.polarity;
 
