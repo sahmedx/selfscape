@@ -312,27 +312,3 @@ This document outlines the step-by-step build sequence for Selfscape. Each step 
 **Definition of done:** The experience feels polished, cohesive, and intentional. Every transition and interaction has been considered. Nothing feels broken or janky.
 
 ---
-
-## Art Production Guide (Parallel Track)
-
-This work happens in Midjourney alongside the code build. It is not blocking for Steps 1-6, which can use placeholder art.
-
-**Phase 1 (needed by Step 7):**
-- 10 base day master world illustrations (16:9 for desktop, 9:16 for mobile)
-- Use Simile screenshots as style reference (upload directly to Midjourney)
-- Suggested Midjourney parameters: --ar 16:9 --s 500 --exp 22
-- Generate one base world you love, then use it as --sref for the remaining nine to maintain consistency
-
-**Phase 2 (needed by Step 7):**
-- 12 Western zodiac animal elements (extractable from backgrounds)
-- 12 Chinese zodiac animal motif elements
-- Render in painterly style matching base worlds
-
-**Phase 3 (needed by Step 7):**
-- 30-50 atmospheric and detail overlay elements for Big Five and Enneagram
-- These can be simpler: fog textures, light effects, architectural details, nature elements
-- Must have transparent or easily removable backgrounds
-
-**Phase 4 (needed by Step 9):**
-- Portrait card template/frame design
-- Selfscape logo/wordmark
