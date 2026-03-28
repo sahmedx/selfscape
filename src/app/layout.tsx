@@ -11,7 +11,27 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: "Selfscape",
-  description: "Discover your personality world",
+  description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
+  openGraph: {
+    title: "Selfscape",
+    description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
+    url: "https://selfscape-sepia.vercel.app/",
+    siteName: "Selfscape",
+    images: [
+      {
+        url: "https://selfscape-sepia.vercel.app/preview.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Selfscape",
+    description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
+    images: ["https://selfscape-sepia.vercel.app/preview.png"],
+  },
 };
 
 export default function RootLayout({
