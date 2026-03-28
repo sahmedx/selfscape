@@ -272,3 +272,24 @@ export interface NarrativeRequest {
   };
   narrativeSummary: string;
 }
+
+// Portrait types
+
+export interface PortraitPillar {
+  element: string;
+  animal: string;
+  stem: string;
+  polarity: string;
+}
+
+export interface PortraitData {
+  sunSign: string;
+  sunElement: string;
+  yearPillar: PortraitPillar;
+  monthPillar: PortraitPillar;
+  dayPillar: PortraitPillar;
+  enneagramType?: number;
+  enneagramName?: string;
+  mbtiCode?: string;
+  bigFiveScores?: BigFiveScores;
+}
