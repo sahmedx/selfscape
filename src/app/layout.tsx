@@ -10,10 +10,10 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Selfscape",
+  title: "Selfscape by Sakib: Your Zodiac Portait",
   description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
   openGraph: {
-    title: "Selfscape",
+    title: "Selfscape by Sakib: Your Zodiac Portait",
     description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
     url: "https://selfscape-sepia.vercel.app/",
     siteName: "Selfscape",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Selfscape",
+    title: "Selfscape by Sakib: Your Zodiac Portait",
     description: "Discover yourself: Zodiac, Chinese Zodiac, Myers-Briggs, Enneagram, Big Five.",
     images: ["https://selfscape-sepia.vercel.app/preview2.jpeg"],
   },
